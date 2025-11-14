@@ -1,0 +1,14 @@
+Update semua halaman admin untuk menggunakan custom modal:
+
+1. /admin/transactions - NEXT
+2. /admin/shipping
+3. /admin/events
+4. /admin/disputes
+5. /admin/notifications
+
+Setiap halaman perlu:
+- Import Modal component
+- Tambahkan modalConfig state
+- Fungsi showModal dan handleModalConfirm
+- Replace semua alert() dan confirm() dengan showModal()
+- Tambahkan <Modal /> component di HTML
