@@ -250,7 +250,15 @@
         <div class="listings-list">
           {#each myListings.slice(0, 3) as listing (listing.id)}
             <div class="listing-item">
-              <div class="listing-icon">{listing.images[0]}</div>
+              <div class="listing-icon">
+                {#if listing.images?.length && listing.images[0]?.startsWith('http')}
+                  <img src={listing.images[0]} alt={listing.title} loading="lazy" />
+                {:else}
+                  <div class="listing-placeholder">
+                    {listing.images?.[0] ?? '📦'}
+                  </div>
+                {/if}
+              </div>
               <div class="listing-info">
                 <h4>{listing.title}</h4>
                 <p class="listing-country">{listing.country}</p>
@@ -583,8 +591,31 @@
   }
 
   .listing-icon {
-    font-size: 2.5rem;
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    overflow: hidden;
     flex-shrink: 0;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .listing-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .listing-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
   }
 
   .listing-info {

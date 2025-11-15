@@ -47,6 +47,14 @@
     authStore.set({ role: 'guest' });
     goto('/');
   }
+
+  function isNavItemActive(href) {
+    if (!currentPath) return false;
+    if (href === '/jastiper') {
+      return currentPath === '/jastiper';
+    }
+    return currentPath === href || currentPath.startsWith(href + '/');
+  }
 </script>
 
 <nav class="navbar">
@@ -58,7 +66,7 @@
     {#each navItems.filter((item) => item.allowedRoles.includes(currentRole)) as item (item.href)}
       <a
         class="nav-link"
-        class:active={currentPath === item.href || currentPath.startsWith(item.href + '/')}
+        class:active={isNavItemActive(item.href)}
         href={item.href}
       >
         {item.label}

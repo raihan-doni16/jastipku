@@ -4,6 +4,7 @@
   import { authStore } from '$lib/stores/auth';
   import Navbar from '$lib/components/Navbar.svelte';
   import RatingStars from '$lib/components/RatingStars.svelte';
+  import Modal from '$lib/components/Modal.svelte';
 
   let currentRole = 'guest';
   authStore.subscribe((val) => {
@@ -21,7 +22,7 @@
     name: 'Sarah Kim',
     email: 'sarah@example.com',
     phone: '+62812345678',
-    avatar: '👩',
+    avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
     country: 'Korea',
     rating: 4.8,
     totalTrips: 45,
@@ -48,6 +49,18 @@
 
   let uploadingDocument = null;
 
+  let modalOpen = false;
+  let modalTitle = '';
+  let modalMessage = '';
+  let modalType = 'info';
+
+  function openModal({ title, message, type = 'info' }) {
+    modalTitle = title;
+    modalMessage = message;
+    modalType = type;
+    modalOpen = true;
+  }
+
   function handleEdit() {
     isEditing = true;
     editForm = { ...profile };
@@ -60,14 +73,22 @@
   function handleSave() {
     profile = { ...editForm };
     isEditing = false;
-    alert('Profil berhasil diperbarui!');
+    openModal({
+      title: 'Profil diperbarui',
+      message: 'Profil jastiper Anda berhasil diperbarui.',
+      type: 'success'
+    });
   }
 
   function handleUploadDocument(docType) {
     uploadingDocument = docType;
     // Simulate file upload
     setTimeout(() => {
-      alert(`Dokumen ${docType} berhasil diupload!`);
+      openModal({
+        title: 'Upload dokumen',
+        message: `Dokumen ${docType} berhasil diupload!`,
+        type: 'success'
+      });
       uploadingDocument = null;
       if (docType === 'passport') {
         profile.passport.fileUploaded = true;
@@ -77,10 +98,19 @@
 
   function handleRequestVerification() {
     if (!profile.passport.fileUploaded) {
-      alert('Harap upload dokumen paspor terlebih dahulu!');
+      openModal({
+        title: 'Dokumen paspor belum ada',
+        message: 'Harap upload dokumen paspor terlebih dahulu sebelum ajukan verifikasi.',
+        type: 'warning'
+      });
       return;
     }
-    alert('Permintaan verifikasi berhasil dikirim! Admin akan mereview dalam 1-3 hari kerja.');
+    openModal({
+      title: 'Permintaan verifikasi dikirim',
+      message:
+        'Permintaan verifikasi berhasil dikirim! Admin akan mereview dalam 1-3 hari kerja.',
+      type: 'success'
+    });
   }
 </script>
 
@@ -89,7 +119,9 @@
 <div class="container">
   <div class="header">
     <div class="header-left">
-      <div class="avatar-large">{profile.avatar}</div>
+      <div class="avatar-large">
+        <img src={profile.avatar} alt={profile.name} />
+      </div>
       <div>
         <h1>{profile.name}</h1>
         <p class="subtitle">{profile.email}</p>
@@ -382,6 +414,14 @@
   </div>
 </div>
 
+<Modal
+  bind:isOpen={modalOpen}
+  type={modalType}
+  title={modalTitle}
+  message={modalMessage}
+  confirmText="OK"
+/>
+
 <style>
   .container {
     max-width: 1200px;
@@ -407,7 +447,17 @@
   }
 
   .avatar-large {
-    font-size: 5rem;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .header h1 {

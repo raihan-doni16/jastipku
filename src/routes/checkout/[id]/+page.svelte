@@ -4,6 +4,7 @@
   import { onMount } from 'svelte';
   import { authStore } from '$lib/stores/auth';
   import Navbar from '$lib/components/Navbar.svelte';
+  import Modal from '$lib/components/Modal.svelte';
   import { listings } from '$lib/data/mockData';
 
   let currentRole = 'guest';
@@ -45,6 +46,20 @@
   $: totalPrice = totalBeforeFee + fee;
   $: dpAmount = totalPrice * 0.5;
 
+  let feedbackModalOpen = false;
+  let feedbackModalTitle = '';
+  let feedbackModalMessage = '';
+  let feedbackModalType = 'info';
+  let feedbackContext = null;
+
+  function showFeedbackModal({ title, message, type = 'info', context = null }) {
+    feedbackModalTitle = title;
+    feedbackModalMessage = message;
+    feedbackModalType = type;
+    feedbackContext = context;
+    feedbackModalOpen = true;
+  }
+
   function formatPrice(price) {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -55,7 +70,11 @@
 
   function handleAgreeTerms() {
     if (!agreedToTerms) {
-      alert('Harap setujui syarat dan ketentuan terlebih dahulu');
+      showFeedbackModal({
+        title: 'Syarat & ketentuan',
+        message: 'Harap setujui syarat dan ketentuan terlebih dahulu.',
+        type: 'warning'
+      });
       return;
     }
     step = 2;
@@ -63,12 +82,20 @@
 
   function handleSubmitOrder() {
     if (!orderForm.productName || !orderForm.shippingAddress || !orderForm.phoneNumber) {
-      alert('Harap lengkapi semua data yang diperlukan');
+      showFeedbackModal({
+        title: 'Data belum lengkap',
+        message: 'Harap lengkapi semua data yang diperlukan sebelum melanjutkan.',
+        type: 'warning'
+      });
       return;
     }
 
     if (!isPrelovedOrder && orderForm.estimatedPrice === 0) {
-      alert('Harap masukkan estimasi harga produk');
+      showFeedbackModal({
+        title: 'Estimasi harga kosong',
+        message: 'Harap masukkan estimasi harga produk.',
+        type: 'warning'
+      });
       return;
     }
 
@@ -77,14 +104,29 @@
 
   function handlePayment() {
     if (!selectedBank) {
-      alert('Harap pilih metode pembayaran');
+      showFeedbackModal({
+        title: 'Metode pembayaran',
+        message: 'Harap pilih metode pembayaran terlebih dahulu.',
+        type: 'warning'
+      });
       return;
     }
 
-    alert(
-      `Pembayaran berhasil dibuat!\nMetode: ${paymentMethod === 'full' ? 'Full Payment' : 'DP 50%'}\nTotal: ${formatPrice(paymentMethod === 'full' ? totalPrice : dpAmount)}\n\nSilahkan transfer ke rekening yang tertera.`
-    );
-    goto('/orders');
+    showFeedbackModal({
+      title: 'Pembayaran berhasil dibuat',
+      message: `Metode: ${
+        paymentMethod === 'full' ? 'Full Payment' : 'DP 50%'
+      }\nTotal: ${formatPrice(paymentMethod === 'full' ? totalPrice : dpAmount)}\n\nSilakan transfer ke rekening yang tertera.`,
+      type: 'success',
+      context: 'paymentCreated'
+    });
+  }
+
+  function handleFeedbackConfirm() {
+    if (feedbackContext === 'paymentCreated') {
+      goto('/orders');
+    }
+    feedbackContext = null;
   }
 </script>
 
@@ -113,8 +155,17 @@
         <div class="step-item" class:active={step >= 3}>
           <div class="step-number">3</div>
           <span>Pembayaran</span>
-        </div>
-      </div>
+  </div>
+</div>
+
+<Modal
+  bind:isOpen={feedbackModalOpen}
+  type={feedbackModalType}
+  title={feedbackModalTitle}
+  message={feedbackModalMessage}
+  confirmText="OK"
+  on:confirm={handleFeedbackConfirm}
+/>
     </div>
 
     {#if step === 1}

@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import { authStore } from '$lib/stores/auth';
   import { cartStore } from '$lib/stores/cart';
+  import Modal from '$lib/components/Modal.svelte';
   import Navbar from '$lib/components/Navbar.svelte';
 
   let currentRole = 'guest';
@@ -18,6 +19,9 @@
 
   $: cart = $cartStore;
   $: cartItems = cart.items;
+
+  let confirmRemoveOpen = false;
+  let itemIdToRemove = null;
 
   function formatPrice(price) {
     return new Intl.NumberFormat('id-ID', {
@@ -62,10 +66,22 @@
     cartStore.updateQuantity(itemId, newQuantity);
   }
 
-  function removeItem(itemId) {
-    if (confirm('Hapus item dari keranjang?')) {
-      cartStore.removeItem(itemId);
+  function askRemoveItem(itemId) {
+    itemIdToRemove = itemId;
+    confirmRemoveOpen = true;
+  }
+
+  function handleConfirmRemove() {
+    if (itemIdToRemove) {
+      cartStore.removeItem(itemIdToRemove);
+      itemIdToRemove = null;
     }
+    confirmRemoveOpen = false;
+  }
+
+  function handleCancelRemove() {
+    itemIdToRemove = null;
+    confirmRemoveOpen = false;
   }
 
   function handleCheckout() {
@@ -109,9 +125,17 @@
         {#each cartItems as item (item.id)}
           <div class="cart-item">
             <div class="item-image">
-              <div class="image-placeholder">
-                {item.listing.images[0]}
-              </div>
+              {#if item.listing.images?.length && item.listing.images[0]?.startsWith('http')}
+                <img
+                  src={item.listing.images[0]}
+                  alt={item.listing.title}
+                  loading="lazy"
+                />
+              {:else}
+                <div class="image-placeholder">
+                  {item.listing.images?.[0] ?? '📦'}
+                </div>
+              {/if}
               <span
                 class="type-badge"
                 style="background: {item.listing.type === 'jastip'
@@ -175,7 +199,7 @@
                 {formatPrice(calculateItemPrice(item))}
               </div>
 
-              <button class="btn-remove" on:click={() => removeItem(item.id)}>
+              <button class="btn-remove" on:click={() => askRemoveItem(item.id)}>
                 🗑️ Hapus
               </button>
             </div>
@@ -237,6 +261,18 @@
     </div>
   {/if}
 </div>
+
+<Modal
+  bind:isOpen={confirmRemoveOpen}
+  title="Hapus item dari keranjang?"
+  message="Item ini akan dihapus dari keranjang belanja Anda."
+  type="confirm"
+  showCancel={true}
+  cancelText="Batal"
+  confirmText="Hapus"
+  on:confirm={handleConfirmRemove}
+  on:cancel={handleCancelRemove}
+/>
 
 <style>
   .container {
@@ -356,6 +392,14 @@
     align-items: center;
     justify-content: center;
     font-size: 3rem;
+  }
+
+  .item-image img {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    object-fit: cover;
+    display: block;
   }
 
   .type-badge {

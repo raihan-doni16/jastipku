@@ -206,7 +206,15 @@
       <div class="top-listings">
         {#each topListings as listing}
           <div class="listing-card">
-            <div class="listing-icon">{listing.images[0]}</div>
+            <div class="listing-icon">
+              {#if listing.images?.length && listing.images[0]?.startsWith('http')}
+                <img src={listing.images[0]} alt={listing.title} loading="lazy" />
+              {:else}
+                <div class="listing-placeholder">
+                  {listing.images?.[0] ?? '📦'}
+                </div>
+              {/if}
+            </div>
             <div>
               <h3>{listing.title}</h3>
               <p>{listing.country}</p>
@@ -247,7 +255,15 @@
       <div class="top-jastipers">
         {#each topJastipers as performer}
           <div class="jastiper-row">
-            <div class="avatar">{performer.avatar}</div>
+            <div class="avatar">
+              {#if performer.avatar?.startsWith('http')}
+                <img src={performer.avatar} alt={performer.name} loading="lazy" />
+              {:else}
+                <div class="avatar-placeholder">
+                  {performer.avatar ?? '👤'}
+                </div>
+              {/if}
+            </div>
             <div class="info">
               <strong>{performer.name}</strong>
               <span>{performer.country} · {performer.totalTrips} trip</span>
@@ -476,10 +492,26 @@
     height: 48px;
     border-radius: 12px;
     background: #f1f5f9;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
+  }
+
+  .listing-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .listing-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .listing-meta {
@@ -517,10 +549,26 @@
     height: 40px;
     border-radius: 12px;
     background: #f1f5f9;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .jastiper-row .info span {

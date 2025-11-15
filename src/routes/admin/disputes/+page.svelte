@@ -28,7 +28,10 @@
       reportedRole: 'jastiper',
       reason: 'Barang tidak sesuai',
       description: 'Barang yang diterima tidak sesuai dengan foto dan deskripsi. Warna berbeda dan ada cacat.',
-      evidence: ['photo1.jpg', 'photo2.jpg'],
+      evidence: [
+        'https://images.pexels.com/photos/3738086/pexels-photo-3738086.jpeg',
+        'https://images.pexels.com/photos/3738088/pexels-photo-3738088.jpeg'
+      ],
       status: 'pending',
       priority: 'high',
       createdAt: '2024-01-17T10:00:00',
@@ -46,7 +49,10 @@
       reportedRole: 'jastiper',
       reason: 'Penipuan',
       description: 'Jastiper menghilang setelah menerima pembayaran. Tidak ada kabar dan tidak bisa dihubungi.',
-      evidence: ['screenshot1.jpg', 'chat1.jpg'],
+      evidence: [
+        'https://images.pexels.com/photos/8819590/pexels-photo-8819590.jpeg',
+        'https://images.pexels.com/photos/1181675/pexels-photo-1181675.jpeg'
+      ],
       status: 'investigating',
       priority: 'critical',
       createdAt: '2024-01-16T14:30:00',
@@ -82,7 +88,10 @@
       reportedRole: 'jastiper',
       reason: 'Barang rusak',
       description: 'Barang diterima dalam kondisi pecah. Kemasan tidak aman.',
-      evidence: ['damaged1.jpg', 'packaging1.jpg'],
+      evidence: [
+        'https://images.pexels.com/photos/322207/pexels-photo-322207.jpeg',
+        'https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg'
+      ],
       status: 'resolved',
       priority: 'high',
       createdAt: '2024-01-15T11:20:00',
@@ -186,6 +195,7 @@
     showCancel: false,
     inputValue: '',
     inputPlaceholder: '',
+    imageUrl: '',
     onConfirm: null
   };
 
@@ -200,6 +210,7 @@
       showCancel: config.showCancel || false,
       inputValue: config.inputValue || '',
       inputPlaceholder: config.inputPlaceholder || '',
+      imageUrl: config.imageUrl || '',
       onConfirm: config.onConfirm || null
     };
   }
@@ -272,6 +283,7 @@
       title: 'Resolusi Sengketa',
       message: 'Masukkan resolusi untuk sengketa ini:',
       inputPlaceholder: 'Masukkan resolusi...',
+      inputType: 'textarea',
       confirmText: 'Lanjutkan',
       cancelText: 'Batal',
       showCancel: true,
@@ -306,6 +318,7 @@
       title: 'Alasan Penolakan',
       message: 'Alasan penolakan:',
       inputPlaceholder: 'Masukkan alasan penolakan...',
+      inputType: 'textarea',
       confirmText: 'Submit',
       cancelText: 'Batal',
       showCancel: true,
@@ -327,10 +340,10 @@
     showModal({
       type: 'info',
       title: 'Bukti',
-      message: `Melihat bukti:\n${evidence.join('\n')}\n\nDalam aplikasi nyata, akan membuka galeri foto.`,
-      confirmText: 'OK'
+      message: '',
+      imageUrl: evidence?.[0] ?? '',
+      confirmText: 'Tutup'
     });
-    // In real app, open image gallery
   }
 
   function approveReview(reviewId) {
@@ -359,6 +372,7 @@
       title: 'Alasan Penghapusan',
       message: 'Alasan penghapusan review:',
       inputPlaceholder: 'Masukkan alasan penghapusan...',
+      inputType: 'textarea',
       confirmText: 'Submit',
       cancelText: 'Batal',
       showCancel: true,
@@ -387,6 +401,7 @@
   showCancel={modalConfig.showCancel}
   bind:inputValue={modalConfig.inputValue}
   inputPlaceholder={modalConfig.inputPlaceholder}
+  imageUrl={modalConfig.imageUrl}
   on:confirm={handleModalConfirm}
 />
 

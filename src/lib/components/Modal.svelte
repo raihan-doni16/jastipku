@@ -13,9 +13,10 @@
   export let inputType = 'text';
   export let maxWidth = '500px';
   export let autoCloseOnConfirm = true;
+  export let imageUrl = '';
 
   let hasCustomBody = false;
-  $: hasCustomBody = !!$$slots.default;
+  $: hasCustomBody = !!$$slots.default || !!imageUrl;
 
   const dispatch = createEventDispatcher();
 
@@ -85,9 +86,15 @@
           <p class="modal-message">{message}</p>
         {/if}
 
-        {#if hasCustomBody}
+        {#if imageUrl}
+          <div class="modal-image-wrapper">
+            <img src={imageUrl} alt={title} class="modal-image" />
+          </div>
+        {/if}
+
+        {#if hasCustomBody && !imageUrl}
           <slot />
-        {:else if type === 'prompt'}
+        {:else if type === 'prompt' && !hasCustomBody}
           {#if inputType === 'textarea'}
             <textarea
               bind:value={inputValue}
@@ -316,6 +323,20 @@
   .btn-confirm:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(8, 106, 223, 0.3);
+  }
+
+  .modal-image-wrapper {
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .modal-image {
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    object-fit: contain;
+    display: block;
+    border-radius: 12px;
   }
 
   @media (max-width: 640px) {

@@ -126,4 +126,17 @@
     font-style: normal;
     font-weight: 600;
   }
+
+  @media (max-width: 480px) {
+    .login {
+      padding: 1.5rem 1rem;
+    }
+
+    .card {
+      width: 90%;
+      max-width: 360px;
+      padding: 2rem 1.75rem;
+      border-radius: 18px;
+    }
+  }
 </style>

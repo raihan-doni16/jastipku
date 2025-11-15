@@ -4,6 +4,7 @@
   import { authStore } from '$lib/stores/auth';
   import { jastiperOrders } from '$lib/data/mockData';
   import Navbar from '$lib/components/Navbar.svelte';
+  import Modal from '$lib/components/Modal.svelte';
 
   let currentRole = 'guest';
   authStore.subscribe((val) => {
@@ -72,8 +73,24 @@
     return badges[status] || { label: status, color: '#64748b' };
   }
 
+  let modalOpen = false;
+  let modalTitle = '';
+  let modalMessage = '';
+  let modalType = 'info';
+
+  function openModal({ title, message, type = 'info' }) {
+    modalTitle = title;
+    modalMessage = message;
+    modalType = type;
+    modalOpen = true;
+  }
+
   function updateOrderStatus(orderId, newStatus) {
-    alert(`Order ${orderId} status updated to: ${newStatus}`);
+    openModal({
+      title: 'Status pesanan diperbarui',
+      message: `Order ${orderId} status diubah menjadi: ${getStatusBadge(newStatus).label}.\n(Demo, belum terhubung API)`,
+      type: 'success'
+    });
     // In real app, update via API
   }
 
@@ -98,8 +115,16 @@
           {jastiperOrders.filter((o) => o.status === 'waiting_payment').length}
         </div>
         <div class="stat-label">Menunggu Pembayaran</div>
-      </div>
-    </div>
+  </div>
+</div>
+
+<Modal
+  bind:isOpen={modalOpen}
+  type={modalType}
+  title={modalTitle}
+  message={modalMessage}
+  confirmText="OK"
+/>
     <div class="stat-card">
       <div class="stat-icon" style="background: #dbeafe;">💰</div>
       <div class="stat-content">

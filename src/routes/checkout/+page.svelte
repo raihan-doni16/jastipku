@@ -4,6 +4,7 @@
   import { authStore } from '$lib/stores/auth';
   import { cartStore } from '$lib/stores/cart';
   import Navbar from '$lib/components/Navbar.svelte';
+  import Modal from '$lib/components/Modal.svelte';
 
   let currentRole = 'guest';
   authStore.subscribe((val) => {
@@ -47,6 +48,20 @@
     { code: 'mandiri', name: 'Mandiri', number: '9876543210', holder: 'PT Jastipku Indonesia' },
     { code: 'bni', name: 'BNI', number: '5555666677', holder: 'PT Jastipku Indonesia' }
   ];
+
+  let feedbackModalOpen = false;
+  let feedbackModalTitle = '';
+  let feedbackModalMessage = '';
+  let feedbackModalType = 'info';
+  let feedbackContext = null;
+
+  function showFeedbackModal({ title, message, type = 'info', context = null }) {
+    feedbackModalTitle = title;
+    feedbackModalMessage = message;
+    feedbackModalType = type;
+    feedbackContext = context;
+    feedbackModalOpen = true;
+  }
 
   function formatPrice(price) {
     return new Intl.NumberFormat('id-ID', {
@@ -98,7 +113,11 @@
   function nextStep() {
     if (step === 1) {
       if (!agreedToTerms) {
-        alert('Anda harus menyetujui syarat dan ketentuan terlebih dahulu');
+        showFeedbackModal({
+          title: 'Syarat & ketentuan',
+          message: 'Anda harus menyetujui syarat dan ketentuan terlebih dahulu.',
+          type: 'warning'
+        });
         return;
       }
     } else if (step === 2) {
@@ -110,7 +129,11 @@
         !shippingData.province ||
         !shippingData.postalCode
       ) {
-        alert('Mohon lengkapi semua data pengiriman');
+        showFeedbackModal({
+          title: 'Data pengiriman belum lengkap',
+          message: 'Mohon lengkapi semua data pengiriman sebelum melanjutkan.',
+          type: 'warning'
+        });
         return;
       }
     }
@@ -123,11 +146,23 @@
 
   function submitOrder() {
     const orderCode = 'ORD' + Date.now();
-    alert(
-      `Pesanan Anda telah dibuat!\n\nKode Pesanan: ${orderCode}\n\nSilakan lakukan pembayaran sebesar ${formatPrice(calculatePaymentAmount())} ke rekening:\n${banks.find((b) => b.code === paymentData.bank)?.name} - ${banks.find((b) => b.code === paymentData.bank)?.number}\n\nSetelah transfer, upload bukti pembayaran di halaman Pesanan Saya.`
-    );
+    const bank = banks.find((b) => b.code === paymentData.bank);
+    showFeedbackModal({
+      title: 'Pesanan berhasil dibuat',
+      message: `Kode Pesanan: ${orderCode}\n\nSilakan lakukan pembayaran sebesar ${formatPrice(
+        calculatePaymentAmount()
+      )} ke rekening:\n${bank?.name} - ${bank?.number}\n\nSetelah transfer, upload bukti pembayaran di halaman Pesanan Saya.`,
+      type: 'success',
+      context: 'orderCreated'
+    });
     cartStore.clearCart();
-    goto('/orders');
+  }
+
+  function handleFeedbackConfirm() {
+    if (feedbackContext === 'orderCreated') {
+      goto('/orders');
+    }
+    feedbackContext = null;
   }
 </script>
 
@@ -361,7 +396,17 @@
         {#each cartItems as item (item.id)}
           <div class="summary-item">
             <div class="item-image-small">
-              {item.listing.images[0]}
+              {#if item.listing.images?.length && item.listing.images[0]?.startsWith('http')}
+                <img
+                  src={item.listing.images[0]}
+                  alt={item.listing.title}
+                  loading="lazy"
+                />
+              {:else}
+                <div class="image-placeholder-small">
+                  {item.listing.images?.[0] ?? '📦'}
+                </div>
+              {/if}
             </div>
             <div class="item-info">
               <div class="item-title">{item.listing.title}</div>
@@ -407,6 +452,15 @@
     </div>
   </div>
 </div>
+
+<Modal
+  bind:isOpen={feedbackModalOpen}
+  type={feedbackModalType}
+  title={feedbackModalTitle}
+  message={feedbackModalMessage}
+  confirmText="OK"
+  on:confirm={handleFeedbackConfirm}
+/>
 
 <style>
   .container {
@@ -822,13 +876,26 @@
   .item-image-small {
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
     border-radius: 8px;
+    overflow: hidden;
+    background: #e5e7eb;
+    flex-shrink: 0;
+  }
+
+  .item-image-small img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .image-placeholder-small {
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2rem;
-    flex-shrink: 0;
   }
 
   .item-info {

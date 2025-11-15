@@ -272,6 +272,7 @@
       title: 'Alasan Penolakan',
       message: 'Alasan penolakan:',
       inputPlaceholder: 'Masukkan alasan penolakan...',
+      inputType: 'textarea',
       confirmText: 'Submit',
       cancelText: 'Batal',
       showCancel: true,

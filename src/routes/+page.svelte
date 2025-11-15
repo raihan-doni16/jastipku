@@ -1,7 +1,7 @@
 <script>
   import Navbar from '$lib/components/Navbar.svelte';
   import RatingStars from '$lib/components/RatingStars.svelte';
-  import { popularCountries, testimonials } from '$lib/data/mockData';
+  import { popularCountries, testimonials, listings } from '$lib/data/mockData';
 
   const languageOptions = [
     { value: 'id', label: 'Indonesia' },
@@ -90,6 +90,10 @@
   };
 
   $: currentCopy = copy[language];
+
+  $: featuredListings = listings
+    .filter((l) => l.type === 'jastip' || l.type === 'preloved')
+    .slice(0, 3);
 </script>
 
 <Navbar
@@ -142,6 +146,46 @@
     {/each}
   </div>
 </section>
+<section class="featured">
+  <header>
+    <h2>Featured Jastip & Preloved</h2>
+    <p>Pilihan populer yang bisa kamu cek sebelum browse semua listing.</p>
+  </header>
+
+  <div class="featured-grid">
+    {#each featuredListings as item}
+      <a href={`/browse/${item.id}`} class="featured-card">
+        <div class="featured-image">
+          {#if item.images?.length}
+            <img src={item.images[0]} alt={item.title} loading="lazy" />
+          {/if}
+          <span class="featured-badge {item.type === 'preloved' ? 'preloved' : ''}">
+            {item.type === 'preloved' ? 'Preloved' : 'Jastip'}
+          </span>
+        </div>
+        <div class="featured-body">
+          <h4>{item.title}</h4>
+          <div class="featured-meta">
+            <div class="featured-avatar">
+              <img src={item.jastiperAvatar} alt={item.jastiperName} />
+            </div>
+            <div class="featured-text">
+              <span class="name">{item.jastiperName}</span>
+              <span class="country">{item.country}</span>
+            </div>
+            {#if item.type === 'preloved' && item.price}
+              <span class="price">
+                Rp {item.price.toLocaleString('id-ID')}
+              </span>
+            {:else}
+              <span class="rating">⭐ {item.jastiperRating}</span>
+            {/if}
+          </div>
+        </div>
+      </a>
+    {/each}
+  </div>
+</section>
 
 <section class="testimonials">
   <header>
@@ -176,6 +220,8 @@
     {/each}
   </div>
 </section>
+
+
 
 <footer class="footer">
   <div class="links">
@@ -367,6 +413,130 @@
 
   .flag {
     font-size: 2rem;
+  }
+
+  .featured {
+    background: #f8fafc;
+  }
+
+  .featured header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .featured h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .featured-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .featured-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    box-shadow: 0 18px 30px rgba(15, 23, 42, 0.06);
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    overflow: hidden;
+  }
+
+  .featured-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 22px 40px rgba(15, 23, 42, 0.12);
+  }
+
+  .featured-image {
+    position: relative;
+    width: 100%;
+    height: 160px;
+    border-radius: 18px 18px 0 0;
+    overflow: hidden;
+    background: #e5e7eb;
+  }
+
+  .featured-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .featured-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(8, 106, 223, 0.95);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  .featured-badge.preloved {
+    background: rgba(249, 115, 22, 0.95);
+  }
+
+  .featured-body h4 {
+    font-size: 0.95rem;
+    margin: 0 0 0.4rem 0;
+    color: #0f172a;
+  }
+
+  .featured-body {
+    padding: 0.85rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .featured-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #64748b;
+  }
+
+  .featured-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .featured-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .featured-text .name {
+    display: block;
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  .featured-text .country {
+    display: block;
+    font-size: 0.75rem;
+  }
+
+  .featured .rating,
+  .featured .price {
+    margin-left: auto;
+    font-weight: 600;
+    color: #0f172a;
   }
 
   .footer {

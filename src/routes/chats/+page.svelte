@@ -83,7 +83,9 @@
             class:unread={chat.unreadCount > 0}
             on:click={() => selectChat(chat)}
           >
-            <div class="chat-avatar">{chat.jastiperAvatar}</div>
+            <div class="chat-avatar">
+              <img src={chat.jastiperAvatar} alt={chat.jastiperName} />
+            </div>
             <div class="chat-info">
               <div class="chat-name-row">
                 <span class="chat-name">{chat.jastiperName}</span>
@@ -116,7 +118,9 @@
       {#if selectedChat}
         <div class="chat-detail-header">
           <button class="back-button" on:click={closeChatDetail}>←</button>
-          <div class="chat-detail-avatar">{selectedChat.jastiperAvatar}</div>
+          <div class="chat-detail-avatar">
+            <img src={selectedChat.jastiperAvatar} alt={selectedChat.jastiperName} />
+          </div>
           <div class="chat-detail-info">
             <div class="chat-detail-name">{selectedChat.jastiperName}</div>
             {#if selectedChat.orderCode}
@@ -268,12 +272,15 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.75rem;
     flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .chat-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .chat-info {
@@ -389,11 +396,14 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.75rem;
+    overflow: hidden;
+  }
+
+  .chat-detail-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .chat-detail-info {

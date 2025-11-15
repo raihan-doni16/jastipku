@@ -155,6 +155,7 @@
     showCancel: false,
     inputValue: '',
     inputPlaceholder: '',
+    imageUrl: '',
     onConfirm: null
   };
 
@@ -169,6 +170,7 @@
       showCancel: config.showCancel || false,
       inputValue: config.inputValue || '',
       inputPlaceholder: config.inputPlaceholder || '',
+      imageUrl: config.imageUrl || '',
       onConfirm: config.onConfirm || null
     };
   }
@@ -243,6 +245,7 @@
       title: 'Catatan Verifikasi',
       message: 'Catatan verifikasi (opsional):',
       inputPlaceholder: 'Masukkan catatan (opsional)...',
+      inputType: 'textarea',
       confirmText: 'Verifikasi',
       cancelText: 'Batal',
       showCancel: true,
@@ -264,6 +267,7 @@
       title: 'Alasan Penolakan',
       message: 'Alasan penolakan:',
       inputPlaceholder: 'Masukkan alasan penolakan...',
+      inputType: 'textarea',
       confirmText: 'Submit',
       cancelText: 'Batal',
       showCancel: true,
@@ -285,10 +289,10 @@
     showModal({
       type: 'info',
       title: 'Bukti Foto',
-      message: `Membuka gambar: ${imageUrl}\n\nDalam aplikasi nyata, gambar akan ditampilkan di modal.`,
-      confirmText: 'OK'
+      message: '',
+      confirmText: 'Tutup'
     });
-    // In real app, open image in modal/lightbox
+    modalConfig.imageUrl = imageUrl;
   }
 </script>
 
@@ -302,6 +306,7 @@
   showCancel={modalConfig.showCancel}
   bind:inputValue={modalConfig.inputValue}
   inputPlaceholder={modalConfig.inputPlaceholder}
+  imageUrl={modalConfig.imageUrl}
   on:confirm={handleModalConfirm}
 />
 

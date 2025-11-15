@@ -110,7 +110,9 @@
 
     <div class="summary-card">
       <div class="profile">
-        <div class="avatar">{user.avatar}</div>
+        <div class="avatar">
+          <img src={user.avatar} alt={user.name} loading="lazy" />
+        </div>
         <div>
           <p class="label">ID Pengguna</p>
           <p class="value">{user.id}</p>
@@ -299,10 +301,17 @@
     height: 64px;
     border-radius: 16px;
     background: #eff6ff;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .label {

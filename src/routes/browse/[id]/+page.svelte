@@ -22,6 +22,12 @@
   $: listingId = $page.params.id;
   $: listing = listings.find((l) => l.id === listingId);
 
+  let activeImageIndex = 0;
+  $: activeImage =
+    listing && listing.images && listing.images.length
+      ? listing.images[activeImageIndex] || listing.images[0]
+      : null;
+
   let quantity = 1;
   let addedToCart = false;
 
@@ -79,11 +85,32 @@
       <!-- Image Gallery -->
       <div class="gallery">
         <div class="main-image">
-          <div class="image-placeholder">{listing.images[0]}</div>
+          {#if activeImage}
+            <img src={activeImage} alt={listing.title} class="main-image-img" />
+          {:else}
+            <div class="image-placeholder">{listing.jastiperAvatar}</div>
+          {/if}
         </div>
         <div class="type-badge" style="background-color: {listing.type === 'jastip' ? '#0ea5e9' : listing.type === 'preloved' ? '#f97316' : '#a855f7'}">
           {listing.type === 'jastip' ? 'Jastip' : listing.type === 'preloved' ? 'Preloved' : 'Event'}
         </div>
+        {#if listing.images && listing.images.length > 1}
+          <div class="thumbs">
+            {#each listing.images as img, index}
+              <button
+                type="button"
+                class="thumb {index === activeImageIndex ? 'active' : ''}"
+                on:click={() => (activeImageIndex = index)}
+              >
+                <img
+                  src={img}
+                  alt={`${listing.title} thumbnail ${index + 1}`}
+                  loading="lazy"
+                />
+              </button>
+            {/each}
+          </div>
+        {/if}
       </div>
 
       <!-- Main Info -->
@@ -186,18 +213,26 @@
             </div>
           </div>
 
-          <div class="action-buttons">
-            <button
-              class="btn-add-cart"
-              on:click={handleAddToCart}
-              disabled={addedToCart}
-            >
-              {addedToCart ? '✓ Ditambahkan!' : '🛒 Tambah ke Keranjang'}
-            </button>
-            <button class="btn-buy-now" on:click={handleBuyNow}>
-              {listing.type === 'preloved' ? 'Beli Sekarang' : 'Order Sekarang'}
-            </button>
-          </div>
+          {#if listing.type === 'jastip'}
+            <div class="action-buttons single">
+              <button class="btn-buy-now" on:click={handleBuyNow}>
+                Custom Order
+              </button>
+            </div>
+          {:else}
+            <div class="action-buttons">
+              <button
+                class="btn-add-cart"
+                on:click={handleAddToCart}
+                disabled={addedToCart}
+              >
+                {addedToCart ? '✓ Ditambahkan!' : '🛒 Tambah ke Keranjang'}
+              </button>
+              <button class="btn-buy-now" on:click={handleBuyNow}>
+                {listing.type === 'preloved' ? 'Beli Sekarang' : 'Order Sekarang'}
+              </button>
+            </div>
+          {/if}
         {/if}
       </div>
 
@@ -205,7 +240,9 @@
       <div class="jastiper-card">
         <h3>Tentang Jastiper</h3>
         <div class="jastiper-profile">
-          <div class="jastiper-avatar">{listing.jastiperAvatar}</div>
+          <div class="jastiper-avatar">
+            <img src={listing.jastiperAvatar} alt={listing.jastiperName} />
+          </div>
           <div class="jastiper-info">
             <h4>{listing.jastiperName}</h4>
             <div class="rating">
@@ -344,10 +381,17 @@
   }
 
   .main-image {
-    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    background: #0f172a;
     border-radius: 12px;
     overflow: hidden;
     aspect-ratio: 1;
+  }
+
+  .main-image-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .image-placeholder {
@@ -369,6 +413,47 @@
     font-size: 0.875rem;
     font-weight: 700;
     text-transform: uppercase;
+  }
+
+  .thumbs {
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.25rem;
+  }
+
+  .thumb {
+    border: none;
+    padding: 0;
+    background: transparent;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 68px;
+    height: 68px;
+    flex: 0 0 auto;
+    cursor: pointer;
+    opacity: 0.8;
+    border: 2px solid transparent;
+    transition: opacity 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+
+  .thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .thumb:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+
+  .thumb.active {
+    opacity: 1;
+    border-color: #0ea5e9;
   }
 
   .main-info {
@@ -623,6 +708,10 @@
     gap: 1rem;
   }
 
+  .action-buttons.single {
+    grid-template-columns: 1fr;
+  }
+
   .btn-add-cart,
   .btn-buy-now {
     padding: 1rem 1.5rem;
@@ -685,7 +774,18 @@
   }
 
   .jastiper-avatar {
-    font-size: 3rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .jastiper-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .jastiper-info h4 {

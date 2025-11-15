@@ -104,7 +104,7 @@ export const jastipers = [
   {
     id: 'JST001',
     name: 'Sarah Kim',
-    avatar: '👩',
+    avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
     country: 'Korea',
     rating: 4.8,
     totalTrips: 45,
@@ -117,7 +117,7 @@ export const jastipers = [
   {
     id: 'JST002',
     name: 'Budi Santoso',
-    avatar: '👨',
+    avatar: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg',
     country: 'Jepang',
     rating: 4.9,
     totalTrips: 67,
@@ -130,7 +130,7 @@ export const jastipers = [
   {
     id: 'JST003',
     name: 'Linda Tan',
-    avatar: '👩',
+    avatar: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg',
     country: 'Singapura',
     rating: 4.7,
     totalTrips: 32,
@@ -143,7 +143,7 @@ export const jastipers = [
   {
     id: 'JST004',
     name: 'Michael Chen',
-    avatar: '👨',
+    avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
     country: 'Amerika Serikat',
     rating: 4.6,
     totalTrips: 28,
@@ -162,7 +162,7 @@ export const listings = [
     type: 'jastip',
     jastiperId: 'JST001',
     jastiperName: 'Sarah Kim',
-    jastiperAvatar: '👩',
+    jastiperAvatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
     jastiperRating: 4.8,
     title: 'Jastip Korea - Kosmetik & Fashion',
     description: 'Jastip langsung dari Korea, bisa request produk dari Olive Young, Innisfree, Etude House, dan brand lokal Korea lainnya.',
@@ -178,7 +178,11 @@ export const listings = [
     feeType: 'percentage',
     quota: 10,
     sold: 3,
-    images: ['🇰🇷'],
+    images: [
+      'https://images.pexels.com/photos/3738086/pexels-photo-3738086.jpeg',
+      'https://images.pexels.com/photos/3738085/pexels-photo-3738085.jpeg',
+      'https://images.pexels.com/photos/3738088/pexels-photo-3738088.jpeg'
+    ],
     categories: ['Kosmetik', 'Fashion', 'Skincare'],
     createdAt: '2025-11-01'
   },
@@ -187,7 +191,7 @@ export const listings = [
     type: 'jastip',
     jastiperId: 'JST002',
     jastiperName: 'Budi Santoso',
-    jastiperAvatar: '👨',
+    jastiperAvatar: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg',
     jastiperRating: 4.9,
     title: 'Jastip Jepang - Elektronik & Gadget',
     description: 'Trip ke Tokyo bulan depan. Bisa titip barang dari Yodobashi Camera, Bic Camera, Don Quijote, dan toko elektronik lainnya.',
@@ -203,7 +207,11 @@ export const listings = [
     feeType: 'percentage',
     quota: 15,
     sold: 8,
-    images: ['🇯🇵'],
+    images: [
+      'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg',
+      'https://images.pexels.com/photos/2181109/pexels-photo-2181109.jpeg',
+      'https://images.pexels.com/photos/1092644/pexels-photo-1092644.jpeg'
+    ],
     categories: ['Elektronik', 'Gadget', 'Gaming'],
     createdAt: '2025-10-28'
   },
@@ -212,7 +220,7 @@ export const listings = [
     type: 'preloved',
     jastiperId: 'JST001',
     jastiperName: 'Sarah Kim',
-    jastiperAvatar: '👩',
+    jastiperAvatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
     jastiperRating: 4.8,
     title: 'Preloved Tas Original Coach',
     description: 'Tas Coach original kondisi 95%, beli dari US. Masih ada dustbag dan kartu authenticity.',
@@ -222,7 +230,11 @@ export const listings = [
     originalPrice: 4500000,
     condition: 'Sangat Baik',
     status: 'available',
-    images: ['👜'],
+    images: [
+      'https://images.pexels.com/photos/845434/pexels-photo-845434.jpeg',
+      'https://images.pexels.com/photos/322207/pexels-photo-322207.jpeg',
+      'https://images.pexels.com/photos/1488463/pexels-photo-1488463.jpeg'
+    ],
     categories: ['Fashion', 'Tas', 'Branded'],
     stock: 1,
     createdAt: '2025-11-05'
@@ -232,7 +244,7 @@ export const listings = [
     type: 'event',
     jastiperId: 'JST003',
     jastiperName: 'Linda Tan',
-    jastiperAvatar: '👩',
+    jastiperAvatar: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg',
     jastiperRating: 4.7,
     title: 'Event Jastip Singapore Great Sale 2025',
     description: 'Event jastip khusus Singapore Great Sale! Slot terbatas hanya 20 orang. First come first served.',
@@ -248,7 +260,11 @@ export const listings = [
     feeType: 'percentage',
     quota: 20,
     sold: 15,
-    images: ['🇸🇬'],
+    images: [
+      'https://images.pexels.com/photos/1050244/pexels-photo-1050244.jpeg',
+      'https://images.pexels.com/photos/2303781/pexels-photo-2303781.jpeg',
+      'https://images.pexels.com/photos/1168940/pexels-photo-1168940.jpeg'
+    ],
     categories: ['Fashion', 'Elektronik', 'Kosmetik'],
     eventType: 'sale',
     createdAt: '2025-11-08'
@@ -258,7 +274,7 @@ export const listings = [
     type: 'jastip',
     jastiperId: 'JST004',
     jastiperName: 'Michael Chen',
-    jastiperAvatar: '👨',
+    jastiperAvatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
     jastiperRating: 4.6,
     title: 'Jastip USA - Apple Products & Branded Items',
     description: 'Jastip dari USA, spesialis produk Apple, Nike, dan brand Amerika lainnya. Harga lebih murah dari Indonesia!',
@@ -274,7 +290,11 @@ export const listings = [
     feeType: 'percentage',
     quota: 8,
     sold: 2,
-    images: ['🇺🇸'],
+    images: [
+      'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg',
+      'https://images.pexels.com/photos/18104/pexels-photo.jpg',
+      'https://images.pexels.com/photos/374870/pexels-photo-374870.jpeg'
+    ],
     categories: ['Elektronik', 'Fashion', 'Sepatu'],
     createdAt: '2025-11-10'
   },
@@ -283,7 +303,7 @@ export const listings = [
     type: 'preloved',
     jastiperId: 'JST002',
     jastiperName: 'Budi Santoso',
-    jastiperAvatar: '👨',
+    jastiperAvatar: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg',
     jastiperRating: 4.9,
     title: 'Preloved Nintendo Switch OLED',
     description: 'Nintendo Switch OLED model white, kondisi mulus seperti baru. Bonus 3 games digital.',
@@ -293,7 +313,11 @@ export const listings = [
     originalPrice: 5200000,
     condition: 'Seperti Baru',
     status: 'available',
-    images: ['🎮'],
+    images: [
+      'https://images.pexels.com/photos/1616516/pexels-photo-1616516.jpeg',
+      'https://images.pexels.com/photos/845434/pexels-photo-845434.jpeg',
+      'https://images.pexels.com/photos/3945683/pexels-photo-3945683.jpeg'
+    ],
     categories: ['Gaming', 'Elektronik'],
     stock: 1,
     createdAt: '2025-11-07'
@@ -348,7 +372,7 @@ export const users = [
     email: 'rina@example.com',
     phone: '+62811111111',
     role: 'user',
-    avatar: '👩',
+    avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
     joinDate: '2024-08-15',
     totalOrders: 12,
     status: 'active'
@@ -359,7 +383,7 @@ export const users = [
     email: 'andi@example.com',
     phone: '+62822222222',
     role: 'user',
-    avatar: '👨',
+    avatar: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg',
     joinDate: '2024-09-20',
     totalOrders: 8,
     status: 'active'
@@ -370,7 +394,7 @@ export const users = [
     email: 'mega@example.com',
     phone: '+62833333333',
     role: 'user',
-    avatar: '👩',
+    avatar: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg',
     joinDate: '2024-10-05',
     totalOrders: 15,
     status: 'active'
@@ -381,7 +405,7 @@ export const users = [
     email: 'dimas@example.com',
     phone: '+62844444444',
     role: 'user',
-    avatar: '👨',
+    avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
     joinDate: '2024-07-12',
     totalOrders: 20,
     status: 'active'
@@ -441,7 +465,7 @@ export const myReviews = [
     orderCode: 'KR-251110-001',
     jastiperId: 'JST001',
     jastiperName: 'Sarah Kim',
-    jastiperAvatar: '👩',
+    jastiperAvatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
     productName: 'Laneige Cream Skin Refiner',
     rating: 5,
     serviceRating: 5,
@@ -451,7 +475,11 @@ export const myReviews = [
     reviewText: 'Pelayanan sangat baik! Barang sampai dengan cepat dan packaging rapi. Sarah sangat responsif menjawab semua pertanyaan saya. Highly recommended!',
     pros: ['Cepat', 'Komunikatif', 'Packaging Rapi', 'Harga Sesuai'],
     cons: [],
-    photos: ['📸', '📸', '📸'],
+    photos: [
+      'https://images.pexels.com/photos/3738086/pexels-photo-3738086.jpeg',
+      'https://images.pexels.com/photos/3738088/pexels-photo-3738088.jpeg',
+      'https://images.pexels.com/photos/3738085/pexels-photo-3738085.jpeg'
+    ],
     recommended: true,
     createdAt: '2025-11-20',
     helpful: 12,
@@ -465,7 +493,7 @@ export const myReviews = [
     orderCode: 'JP-251105-002',
     jastiperId: 'JST002',
     jastiperName: 'Yuki Tanaka',
-    jastiperAvatar: '👨',
+    jastiperAvatar: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg',
     productName: 'Uniqlo Heattech Long Sleeve',
     rating: 4,
     serviceRating: 4,
@@ -475,7 +503,9 @@ export const myReviews = [
     reviewText: 'Barang original dan sesuai deskripsi. Proses agak lama karena menunggu schedule keberangkatan, tapi overall puas dengan hasilnya.',
     pros: ['Barang Original', 'Harga Terjangkau', 'Terpercaya'],
     cons: ['Agak Lama'],
-    photos: ['📸'],
+    photos: [
+      'https://images.pexels.com/photos/298864/pexels-photo-298864.jpeg'
+    ],
     recommended: true,
     createdAt: '2025-11-18',
     helpful: 8,
@@ -486,7 +516,7 @@ export const myReviews = [
     orderCode: 'US-251101-003',
     jastiperId: 'JST003',
     jastiperName: 'Michael Chen',
-    jastiperAvatar: '👨',
+    jastiperAvatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
     productName: 'iPhone 15 Pro Case',
     rating: 5,
     serviceRating: 5,
@@ -496,7 +526,10 @@ export const myReviews = [
     reviewText: 'Fast response, barang datang lebih cepat dari estimasi. Michael selalu update status pembelian dan pengiriman. Pasti order lagi next time!',
     pros: ['Super Cepat', 'Komunikatif', 'Update Berkala', 'Profesional'],
     cons: [],
-    photos: ['📸', '📸'],
+    photos: [
+      'https://images.pexels.com/photos/788946/pexels-photo-788946.jpeg',
+      'https://images.pexels.com/photos/1616516/pexels-photo-1616516.jpeg'
+    ],
     recommended: true,
     createdAt: '2025-11-15',
     helpful: 15,
@@ -510,7 +543,7 @@ export const myReviews = [
     orderCode: 'KR-251025-004',
     jastiperId: 'JST001',
     jastiperName: 'Sarah Kim',
-    jastiperAvatar: '👩',
+    jastiperAvatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
     productName: 'Innisfree Green Tea Serum',
     rating: 4,
     serviceRating: 4,
@@ -537,7 +570,7 @@ export const chatHistory = [
     id: 'CHAT001',
     jastiperId: 'JST001',
     jastiperName: 'Sarah Kim',
-    jastiperAvatar: '👩',
+    jastiperAvatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg',
     buyerName: 'Nadia Putri',
     buyerAvatar: '🛍️',
     lastMessage: 'Baik, nanti saya update kalau sudah sampai Indonesia ya!',
@@ -621,7 +654,7 @@ export const chatHistory = [
     id: 'CHAT002',
     jastiperId: 'JST002',
     jastiperName: 'Yuki Tanaka',
-    jastiperAvatar: '👨',
+    jastiperAvatar: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg',
     buyerName: 'Andi Wijaya',
     buyerAvatar: '🧳',
     lastMessage: 'Size M masih ada kok kak',
@@ -656,7 +689,7 @@ export const chatHistory = [
     id: 'CHAT003',
     jastiperId: 'JST003',
     jastiperName: 'Michael Chen',
-    jastiperAvatar: '👨',
+    jastiperAvatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg',
     lastMessage: 'You are welcome! Feel free to reach out anytime',
     lastMessageTime: '2025-11-15 18:45',
     unreadCount: 0,
@@ -710,7 +743,7 @@ export const chatHistory = [
     id: 'CHAT004',
     jastiperId: 'JST004',
     jastiperName: 'Lisa Wong',
-    jastiperAvatar: '👩',
+    jastiperAvatar: 'https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg',
     lastMessage: 'Oke kak, terima kasih banyak!',
     lastMessageTime: '2025-11-12 16:20',
     unreadCount: 0,

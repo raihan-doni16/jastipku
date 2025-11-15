@@ -74,6 +74,27 @@
     return found?.label ?? type;
   }
 
+  function getStatusLabel(status) {
+    if (status === 'available') return 'Open';
+    return status || '';
+  }
+
+  function formatListingAge(dateStr) {
+    if (!dateStr) return '';
+    const created = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - created.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays <= 0) return 'Hari ini';
+    if (diffDays === 1) return '1 hari lalu';
+    if (diffDays < 7) return `${diffDays} hari lalu`;
+
+    const diffWeeks = Math.floor(diffDays / 7);
+    if (diffWeeks === 1) return '1 minggu lalu';
+    return `${diffWeeks} minggu lalu`;
+  }
+
   function getTypeBadgeColor(type) {
     if (type === 'jastip') return '#0ea5e9';
     if (type === 'preloved') return '#f97316';
@@ -92,6 +113,18 @@
     estimatedPrice: '',
     notes: ''
   };
+
+  let customOrderFeedbackOpen = false;
+  let customOrderFeedbackTitle = '';
+  let customOrderFeedbackMessage = '';
+  let customOrderFeedbackType = 'info';
+
+  function showCustomOrderFeedback({ title, message, type = 'info' }) {
+    customOrderFeedbackTitle = title;
+    customOrderFeedbackMessage = message;
+    customOrderFeedbackType = type;
+    customOrderFeedbackOpen = true;
+  }
 
   function handleAddToCart(listing, event) {
     event.preventDefault();
@@ -128,7 +161,11 @@
 
   function submitCustomOrder() {
     if (!customOrderForm.productName || !customOrderForm.estimatedPrice) {
-      alert('Mohon lengkapi nama produk dan estimasi harga');
+      showCustomOrderFeedback({
+        title: 'Data belum lengkap',
+        message: 'Mohon lengkapi nama produk dan estimasi harga.',
+        type: 'warning'
+      });
       return;
     }
 
@@ -160,7 +197,11 @@
 
     cartStore.addItem(customListing, parseInt(customOrderForm.quantity));
 
-    alert(`Custom order "${customOrderForm.productName}" berhasil ditambahkan ke keranjang!`);
+    showCustomOrderFeedback({
+      title: 'Custom order ditambahkan',
+      message: `Custom order "${customOrderForm.productName}" berhasil ditambahkan ke keranjang.`,
+      type: 'success'
+    });
     closeCustomOrderModal();
   }
 </script>
@@ -214,9 +255,23 @@
     {#each filteredListings as listing (listing.id)}
       <a href="/browse/{listing.id}" class="listing-card">
         <div class="card-image">
-          <div class="image-placeholder">
-            {listing.images[0]}
-          </div>
+          {#if listing.images?.length}
+            <img
+              src={listing.images[0]}
+              alt={listing.title}
+              class="card-image-img"
+              loading="lazy"
+            />
+          {:else}
+            <div class="image-placeholder">
+              {listing.jastiperAvatar}
+            </div>
+          {/if}
+          {#if listing.status}
+            <div class="status-badge">
+              {getStatusLabel(listing.status)}
+            </div>
+          {/if}
           <div class="type-badge" style="background-color: {getTypeBadgeColor(listing.type)}">
             {getTypeLabel(listing.type)}
           </div>
@@ -239,6 +294,15 @@
           <!-- Title -->
           <h3 class="listing-title">{listing.title}</h3>
 
+          <!-- Category Tags -->
+          {#if listing.categories?.length}
+            <div class="category-tags">
+              {#each listing.categories as category}
+                <span class="category-tag">{category}</span>
+              {/each}
+            </div>
+          {/if}
+
           <!-- Meta Info Row -->
           <div class="meta-row">
             <div class="rating-badge">
@@ -251,35 +315,63 @@
 
           <!-- Jastiper Info -->
           <div class="jastiper-compact">
-            <span class="jastiper-avatar-small">{listing.jastiperAvatar}</span>
+            <img
+              src={listing.jastiperAvatar}
+              alt={listing.jastiperName}
+              class="jastiper-avatar-small"
+              loading="lazy"
+            />
             <span class="jastiper-name-small">{listing.jastiperName}</span>
           </div>
 
           {#if listing.type !== 'preloved'}
             <div class="quota-info">
-              <div class="quota-bar">
-                <div
-                  class="quota-fill"
-                  style="width: {(listing.sold / listing.quota) * 100}%"
-                ></div>
+            <div class="quota-bar">
+              <div
+                class="quota-fill"
+                style="width: {(listing.sold / listing.quota) * 100}%"
+              ></div>
               </div>
               <span class="quota-text">{listing.sold}/{listing.quota} slot</span>
             </div>
           {/if}
 
           <div class="card-actions">
-            <button
-              class="btn-add-to-cart"
-              class:added={addedItems[listing.id]}
-              on:click={(e) => handleAddToCart(listing, e)}
-            >
-              {addedItems[listing.id] ? '✓' : '🛒'}
-            </button>
-
-            {#if listing.type === 'jastip' && listing.stores?.length > 0}
-              <button class="btn-custom-order" on:click={(e) => openCustomOrderModal(listing, e)}>
-                ✏️
+            {#if listing.type === 'jastip'}
+              {#if listing.stores?.length > 0}
+                <button
+                  class="btn-custom-order"
+                  on:click={(e) => openCustomOrderModal(listing, e)}
+                >
+                  <span class="btn-icon-circle">✎</span>
+                  <span class="btn-label">Custom Order</span>
+                </button>
+              {/if}
+            {:else}
+              <button
+                class="btn-add-to-cart"
+                class:added={addedItems[listing.id]}
+                on:click={(e) => handleAddToCart(listing, e)}
+              >
+                <span class="btn-icon-circle">
+                  {addedItems[listing.id] ? '✓' : '+'}
+                </span>
+                <span class="btn-label">Keranjang</span>
               </button>
+            {/if}
+          </div>
+
+          <!-- Footer info -->
+          <div class="card-footer">
+            <div class="footer-group">
+              <span class="footer-icon">📍</span>
+              <span class="footer-text">{listing.country}</span>
+            </div>
+            {#if listing.createdAt}
+              <div class="footer-group">
+                <span class="footer-icon">⏱</span>
+                <span class="footer-text">{formatListingAge(listing.createdAt)}</span>
+              </div>
             {/if}
           </div>
         </div>
@@ -310,7 +402,11 @@
   {#if selectedListingForCustom}
     <div class="custom-order-modal">
       <div class="jastiper-info-modal">
-        <span class="avatar-large">{selectedListingForCustom.jastiperAvatar}</span>
+        <img
+          src={selectedListingForCustom.jastiperAvatar}
+          alt={selectedListingForCustom.jastiperName}
+          class="avatar-large"
+        />
         <div>
           <div class="jastiper-name-large">{selectedListingForCustom.jastiperName}</div>
           <div class="jastiper-meta">
@@ -321,8 +417,16 @@
               <strong>Toko tersedia:</strong>
               {selectedListingForCustom.stores.join(', ')}
             </div>
-          {/if}
-        </div>
+  {/if}
+</div>
+
+<Modal
+  bind:isOpen={customOrderFeedbackOpen}
+  type={customOrderFeedbackType}
+  title={customOrderFeedbackTitle}
+  message={customOrderFeedbackMessage}
+  confirmText="OK"
+/>
       </div>
 
       <p class="modal-description">
@@ -451,11 +555,12 @@
 
   .search-input {
     width: 100%;
+    max-width: 1190px;
     padding: 0.875rem 1.25rem;
     border: 2px solid #e2e8f0;
     border-radius: 8px;
     font-size: 1rem;
-    margin-bottom: 1rem;
+    margin: 0 auto 1rem auto;
     transition: border-color 0.2s;
   }
 
@@ -519,7 +624,14 @@
     position: relative;
     width: 100%;
     height: 200px;
-    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+  }
+
+  .card-image-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .image-placeholder {
@@ -531,9 +643,23 @@
     font-size: 4rem;
   }
 
-  .type-badge {
+  .status-badge {
     position: absolute;
     top: 12px;
+    left: 12px;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  }
+
+  .type-badge {
+    position: absolute;
+    bottom: 12px;
     right: 12px;
     padding: 0.35rem 0.75rem;
     border-radius: 6px;
@@ -548,7 +674,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.6rem;
   }
 
   .price-section {
@@ -597,6 +723,21 @@
     color: #64748b;
   }
 
+  .category-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .category-tag {
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    background: #e5f2ff;
+    color: #075985;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
   .rating-badge {
     display: flex;
     align-items: center;
@@ -633,7 +774,11 @@
   }
 
   .jastiper-avatar-small {
-    font-size: 1rem;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    object-fit: cover;
+    flex-shrink: 0;
   }
 
   .jastiper-name-small {
@@ -678,50 +823,107 @@
 
   .btn-add-to-cart {
     flex: 1;
-    padding: 0.5rem;
-    background: linear-gradient(135deg, #086adf, #0ea5e9);
+    padding: 0.55rem 1rem;
+    background: #0ea5e9;
     color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.125rem;
+    border-radius: 999px;
+    border: 1px solid #0ea5e9;
+    font-size: 0.9rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease,
+      border-color 0.2s ease;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 4px 10px rgba(14, 165, 233, 0.25);
   }
 
   .btn-add-to-cart:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(8, 106, 223, 0.3);
+    background: #0284c7;
+    border-color: #0284c7;
+    box-shadow: 0 8px 18px rgba(8, 106, 223, 0.28);
+    transform: translateY(-1px);
   }
 
   .btn-add-to-cart.added {
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: #22c55e;
+    border-color: #22c55e;
+    box-shadow: 0 6px 14px rgba(34, 197, 94, 0.28);
   }
 
   .btn-custom-order {
-    padding: 0.5rem;
-    background: white;
-    color: #f59e0b;
-    border: 2px solid #f59e0b;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.125rem;
+    flex: 1;
+    padding: 0.55rem 1rem;
+    background: #ffffff;
+    color: #0f172a;
+    border-radius: 999px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease,
+      border-color 0.2s ease, color 0.2s ease;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
   }
 
   .btn-custom-order:hover {
-    background: #fef3c7;
-    transform: scale(1.05);
+    background: #f9fafb;
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .btn-icon-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+
+  .btn-add-to-cart .btn-icon-circle {
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+  }
+
+  .btn-custom-order .btn-icon-circle {
+    background: #e5e7eb;
+    color: #0f172a;
+  }
+
+  .btn-label {
+    margin-left: 0.35rem;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed #e2e8f0;
+    font-size: 0.8rem;
+    color: #64748b;
+  }
+
+  .footer-group {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .footer-icon {
+    font-size: 0.9rem;
+  }
+
+  .footer-text {
+    font-weight: 500;
   }
 
 
@@ -768,11 +970,7 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
+    object-fit: cover;
     flex-shrink: 0;
   }
 

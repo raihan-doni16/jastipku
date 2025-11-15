@@ -117,7 +117,9 @@
       <div class="review-card">
         <div class="review-header">
           <div class="jastiper-info">
-            <span class="avatar">{review.jastiperAvatar}</span>
+            <span class="avatar">
+              <img src={review.jastiperAvatar} alt={review.jastiperName} />
+            </span>
             <div class="jastiper-details">
               <div class="jastiper-name">{review.jastiperName}</div>
               <div class="product-name">{review.productName}</div>
@@ -187,8 +189,14 @@
 
           {#if review.photos.length > 0}
             <div class="photos">
-              {#each review.photos as photo}
-                <div class="photo-item">{photo}</div>
+              {#each review.photos as photo, index}
+                <div class="photo-item">
+                  <img
+                    src={photo}
+                    alt={`Foto ulasan ${index + 1} untuk ${review.productName}`}
+                    loading="lazy"
+                  />
+                </div>
               {/each}
             </div>
           {/if}
@@ -385,12 +393,15 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
     flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .jastiper-details {
@@ -539,12 +550,16 @@
     width: 100px;
     height: 100px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 3rem;
+    overflow: hidden;
+    background: #0f172a;
     border: 2px solid #e2e8f0;
+  }
+
+  .photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .review-footer {

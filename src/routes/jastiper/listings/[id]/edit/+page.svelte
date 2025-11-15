@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import Navbar from '$lib/components/Navbar.svelte';
+  import Modal from '$lib/components/Modal.svelte';
   import { authStore } from '$lib/stores/auth';
   import { listings, popularCountries } from '$lib/data/mockData';
 
@@ -117,9 +118,27 @@
     formData.country = country ? country.name : '';
   }
 
+  let modalOpen = false;
+  let modalTitle = '';
+  let modalMessage = '';
+  let modalType = 'info';
+  let modalContext = null;
+
+  function openModal({ title, message, type = 'info', context = null }) {
+    modalTitle = title;
+    modalMessage = message;
+    modalType = type;
+    modalContext = context;
+    modalOpen = true;
+  }
+
   function validateForm() {
     if (!formData.title || !formData.description || !formData.countryCode) {
-      alert('Harap lengkapi data wajib!');
+      openModal({
+        title: 'Data wajib belum lengkap',
+        message: 'Harap lengkapi judul, deskripsi, dan negara untuk postingan ini.',
+        type: 'warning'
+      });
       return false;
     }
 
@@ -131,27 +150,43 @@
         !formData.fee ||
         !formData.quota
       ) {
-        alert('Lengkapi data perjalanan terlebih dahulu.');
+        openModal({
+          title: 'Data perjalanan belum lengkap',
+          message: 'Lengkapi data perjalanan (tanggal & estimasi) terlebih dahulu.',
+          type: 'warning'
+        });
         return false;
       }
 
       const validStores = formData.stores.filter((s) => s.trim() !== '');
       if (validStores.length === 0) {
-        alert('Harap tambahkan minimal 1 toko.');
+        openModal({
+          title: 'Toko belum diisi',
+          message: 'Harap tambahkan minimal 1 toko untuk tempat pembelian.',
+          type: 'warning'
+        });
         return false;
       }
     }
 
     if (postType === 'preloved') {
       if (!formData.price || !formData.condition) {
-        alert('Harap lengkapi data preloved!');
+        openModal({
+          title: 'Data preloved belum lengkap',
+          message: 'Harap lengkapi harga dan kondisi barang preloved.',
+          type: 'warning'
+        });
         return false;
       }
     }
 
     const validCategories = formData.categories.filter((c) => c.trim() !== '');
     if (validCategories.length === 0) {
-      alert('Harap pilih minimal 1 kategori.');
+      openModal({
+        title: 'Kategori belum dipilih',
+        message: 'Harap pilih minimal 1 kategori untuk postingan ini.',
+        type: 'warning'
+      });
       return false;
     }
 
@@ -160,7 +195,11 @@
 
   function handleSubmit() {
     if (!listing) {
-      alert('Postingan tidak ditemukan.');
+      openModal({
+        title: 'Postingan tidak ditemukan',
+        message: 'Postingan yang ingin diedit tidak ditemukan.',
+        type: 'error'
+      });
       return;
     }
 
@@ -191,8 +230,12 @@
     };
 
     console.log('Updated listing:', updatedListing);
-    alert(`Postingan ${listing.id} berhasil diperbarui!`);
-    goto('/jastiper/listings');
+    openModal({
+      title: 'Postingan diperbarui',
+      message: `Postingan ${listing.id} berhasil diperbarui!`,
+      type: 'success',
+      context: 'updated'
+    });
   }
 
   function resetChanges() {
@@ -200,6 +243,14 @@
       formData = buildFormDataFromListing(listing);
       postType = listing.type ?? 'jastip';
     }
+  }
+
+  function handleModalConfirm() {
+    if (modalContext === 'updated') {
+      goto('/jastiper/listings');
+    }
+    modalContext = null;
+    modalOpen = false;
   }
 </script>
 
@@ -470,6 +521,15 @@
     </button>
   </div>
 {/if}
+
+<Modal
+  bind:isOpen={modalOpen}
+  type={modalType}
+  title={modalTitle}
+  message={modalMessage}
+  confirmText="OK"
+  on:confirm={handleModalConfirm}
+/>
 
 <style>
   .container {

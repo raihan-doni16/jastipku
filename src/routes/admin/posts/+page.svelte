@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { authStore } from '$lib/stores/auth';
+  import Modal from '$lib/components/Modal.svelte';
   import { listings } from '$lib/data/mockData';
 
   let currentRole = 'guest';
@@ -82,23 +83,80 @@
     return badges[status] || { label: status, color: '#64748b' };
   }
 
+  let modalOpen = false;
+  let modalTitle = '';
+  let modalMessage = '';
+  let modalType = 'info';
+  let modalShowCancel = false;
+  let modalContext = null;
+
+  function openModal({ title, message, type = 'info', showCancel = false, context = null }) {
+    modalTitle = title;
+    modalMessage = message;
+    modalType = type;
+    modalShowCancel = showCancel;
+    modalContext = context;
+    modalOpen = true;
+  }
+
   function suspendPost(id, title) {
-    if (confirm(`Suspend postingan "${title}"?`)) {
-      alert(`Postingan "${title}" telah di-suspend`);
-      // Update status in real app
-    }
+    openModal({
+      title: 'Suspend postingan',
+      message: `Suspend postingan "${title}"?`,
+      type: 'confirm',
+      showCancel: true,
+      context: { action: 'suspend', id, title }
+    });
   }
 
   function activatePost(id, title) {
-    if (confirm(`Aktifkan kembali postingan "${title}"?`)) {
-      alert(`Postingan "${title}" telah diaktifkan`);
-    }
+    openModal({
+      title: 'Aktifkan postingan',
+      message: `Aktifkan kembali postingan "${title}"?`,
+      type: 'confirm',
+      showCancel: true,
+      context: { action: 'activate', id, title }
+    });
   }
 
   function deletePost(id, title) {
-    if (confirm(`Hapus postingan "${title}" secara permanen?`)) {
-      alert(`Postingan "${title}" telah dihapus`);
+    openModal({
+      title: 'Hapus postingan',
+      message: `Hapus postingan "${title}" secara permanen?`,
+      type: 'confirm',
+      showCancel: true,
+      context: { action: 'delete', id, title }
+    });
+  }
+
+  function handleModalConfirm() {
+    if (modalContext?.action === 'suspend') {
+      openModal({
+        title: 'Postingan di-suspend',
+        message: `Postingan "${modalContext.title}" telah di-suspend. (Demo, belum terhubung API)`,
+        type: 'success'
+      });
+    } else if (modalContext?.action === 'activate') {
+      openModal({
+        title: 'Postingan diaktifkan',
+        message: `Postingan "${modalContext.title}" telah diaktifkan. (Demo, belum terhubung API)`,
+        type: 'success'
+      });
+    } else if (modalContext?.action === 'delete') {
+      openModal({
+        title: 'Postingan dihapus',
+        message: `Postingan "${modalContext.title}" telah dihapus. (Demo, belum terhubung API)`,
+        type: 'success'
+      });
+    } else {
+      modalOpen = false;
     }
+    modalContext = null;
+  }
+
+  function handleModalCancel() {
+    modalOpen = false;
+    modalContext = null;
   }
 </script>
 
@@ -189,7 +247,13 @@
         </div>
 
         <div class="card-image">
-          <div class="image-placeholder">{listing.images[0]}</div>
+          {#if listing.images?.length && listing.images[0]?.startsWith('http')}
+            <img src={listing.images[0]} alt={listing.title} loading="lazy" />
+          {:else}
+            <div class="image-placeholder">
+              {listing.images?.[0] ?? '📦'}
+            </div>
+          {/if}
         </div>
 
         <div class="card-content">
@@ -197,7 +261,9 @@
           <p class="listing-description">{listing.description}</p>
 
           <div class="jastiper-info">
-            <span class="avatar">{listing.jastiperAvatar}</span>
+            <span class="avatar">
+              <img src={listing.jastiperAvatar} alt={listing.jastiperName} loading="lazy" />
+            </span>
             <span class="jastiper-name">{listing.jastiperName}</span>
           </div>
 
@@ -266,6 +332,18 @@
     </div>
   {/if}
 </div>
+
+<Modal
+  bind:isOpen={modalOpen}
+  type={modalType}
+  title={modalTitle}
+  message={modalMessage}
+  showCancel={modalShowCancel}
+  cancelText="Batal"
+  confirmText="OK"
+  on:confirm={handleModalConfirm}
+  on:cancel={handleModalCancel}
+/>
 
 <style>
   .container {
@@ -434,6 +512,14 @@
     width: 100%;
     height: 180px;
     background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    overflow: hidden;
+  }
+
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .image-placeholder {
@@ -480,7 +566,21 @@
   }
 
   .avatar {
-    font-size: 1.5rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: #e5e7eb;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .jastiper-name {

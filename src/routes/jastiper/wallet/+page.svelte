@@ -60,9 +60,25 @@
     });
   }
 
+  let feedbackModalOpen = false;
+  let feedbackModalTitle = '';
+  let feedbackModalMessage = '';
+  let feedbackModalType = 'info';
+
+  function openFeedbackModal({ title, message, type = 'info' }) {
+    feedbackModalTitle = title;
+    feedbackModalMessage = message;
+    feedbackModalType = type;
+    feedbackModalOpen = true;
+  }
+
   function handleWithdraw() {
     if (activeBalance === 0) {
-      alert('Saldo aktif Anda kosong');
+      openFeedbackModal({
+        title: 'Saldo kosong',
+        message: 'Saldo aktif Anda kosong, belum bisa melakukan penarikan.',
+        type: 'warning'
+      });
       return;
     }
     showWithdrawModal = true;
@@ -70,17 +86,31 @@
 
   function submitWithdrawal() {
     if (!withdrawForm.amount || withdrawForm.amount > activeBalance) {
-      alert('Jumlah penarikan tidak valid');
+      openFeedbackModal({
+        title: 'Jumlah tidak valid',
+        message: 'Jumlah penarikan tidak valid. Periksa kembali nominal yang dimasukkan.',
+        type: 'warning'
+      });
       return;
     }
     if (!withdrawForm.bankName || !withdrawForm.accountNumber || !withdrawForm.accountName) {
-      alert('Harap lengkapi data rekening');
+      openFeedbackModal({
+        title: 'Data rekening belum lengkap',
+        message: 'Harap lengkapi semua data rekening sebelum mengirim permintaan penarikan.',
+        type: 'warning'
+      });
       return;
     }
 
-    alert(
-      `Permintaan penarikan berhasil!\nJumlah: ${formatPrice(withdrawForm.amount)}\nBank: ${withdrawForm.bankName}\nRekening: ${withdrawForm.accountNumber}\n\nDana akan ditransfer dalam 1-3 hari kerja.`
-    );
+    openFeedbackModal({
+      title: 'Permintaan penarikan terkirim',
+      message: `Permintaan penarikan berhasil!\n\nJumlah: ${formatPrice(
+        withdrawForm.amount
+      )}\nBank: ${withdrawForm.bankName}\nRekening: ${
+        withdrawForm.accountNumber
+      }\n\nDana akan ditransfer dalam 1-3 hari kerja.`,
+      type: 'success'
+    });
     showWithdrawModal = false;
     withdrawForm = {
       amount: 0,
@@ -227,6 +257,14 @@
     {/if}
   </div>
 </div>
+
+<Modal
+  bind:isOpen={feedbackModalOpen}
+  type={feedbackModalType}
+  title={feedbackModalTitle}
+  message={feedbackModalMessage}
+  confirmText="OK"
+/>
 
 <Modal
   bind:isOpen={showWithdrawModal}

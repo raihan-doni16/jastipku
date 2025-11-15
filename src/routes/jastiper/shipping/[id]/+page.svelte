@@ -5,6 +5,7 @@
   import { authStore } from '$lib/stores/auth';
   import { jastiperOrders } from '$lib/data/mockData';
   import Navbar from '$lib/components/Navbar.svelte';
+  import Modal from '$lib/components/Modal.svelte';
 
   let currentRole = 'guest';
   authStore.subscribe((val) => {
@@ -49,16 +50,48 @@
     }).format(price);
   }
 
+  let modalOpen = false;
+  let modalTitle = '';
+  let modalMessage = '';
+  let modalType = 'info';
+  let modalContext = null;
+
+  function openModal({ title, message, type = 'info', context = null }) {
+    modalTitle = title;
+    modalMessage = message;
+    modalType = type;
+    modalContext = context;
+    modalOpen = true;
+  }
+
   function submitShipping() {
     if (!shippingData.courier || !shippingData.trackingNumber) {
-      alert('Mohon lengkapi data kurir dan nomor resi');
+      openModal({
+        title: 'Data pengiriman belum lengkap',
+        message: 'Mohon lengkapi data kurir dan nomor resi sebelum submit pengiriman.',
+        type: 'warning'
+      });
       return;
     }
 
-    alert(
-      `Pengiriman berhasil diatur!\n\nKurir: ${courierOptions.find((c) => c.value === shippingData.courier)?.label}\nNo Resi: ${shippingData.trackingNumber}\n\nPembeli akan menerima notifikasi.`
-    );
-    goto('/jastiper/orders');
+    openModal({
+      title: 'Pengiriman berhasil diatur',
+      message: `Kurir: ${
+        courierOptions.find((c) => c.value === shippingData.courier)?.label
+      }\nNo Resi: ${
+        shippingData.trackingNumber
+      }\n\nPembeli akan menerima notifikasi dan update status pesanan.`,
+      type: 'success',
+      context: 'shippingSubmitted'
+    });
+  }
+
+  function handleModalConfirm() {
+    if (modalContext === 'shippingSubmitted') {
+      goto('/jastiper/orders');
+    }
+    modalContext = null;
+    modalOpen = false;
   }
 </script>
 
@@ -199,6 +232,15 @@
     </div>
   {/if}
 </div>
+
+<Modal
+  bind:isOpen={modalOpen}
+  type={modalType}
+  title={modalTitle}
+  message={modalMessage}
+  confirmText="OK"
+  on:confirm={handleModalConfirm}
+/>
 
 <style>
   .container {

@@ -190,7 +190,9 @@
         </div>
 
         <div class="jastiper-profile">
-          <div class="avatar">{jastiper.avatar}</div>
+          <div class="avatar">
+            <img src={jastiper.avatar} alt={jastiper.name} loading="lazy" />
+          </div>
           <div class="profile-info">
             <h3>{jastiper.name}</h3>
             <div class="rating">
@@ -472,6 +474,7 @@
 
   .search-input {
     width: 100%;
+    max-width: 1300px;
     padding: 0.875rem 1.25rem;
     border: 2px solid #e2e8f0;
     border-radius: 8px;
@@ -562,7 +565,19 @@
   }
 
   .avatar {
-    font-size: 3rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #e5e7eb;
+    flex-shrink: 0;
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .profile-info h3 {

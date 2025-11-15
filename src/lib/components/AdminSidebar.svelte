@@ -1,6 +1,8 @@
 <script>
   import { page } from '$app/stores';
 
+  export let isOpen = true;
+
   const menuItems = [
     {
       section: 'Main',
@@ -46,7 +48,7 @@
   }
 </script>
 
-<aside class="sidebar">
+<aside class="sidebar" class:open={isOpen}>
   <div class="sidebar-header">
     <div class="admin-badge">
       <span class="badge-icon">👑</span>
@@ -238,12 +240,25 @@
 
   @media (max-width: 768px) {
     .sidebar {
-      transform: translateX(-100%);
-      transition: transform 0.3s;
+      position: fixed;
+      top: 64px;
+      left: 0;
+      width: 100%;
+      height: auto;
+      max-height: calc(100vh - 64px);
+      border-right: none;
+      border-bottom: 2px solid #e2e8f0;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+      transform: translateY(-100%);
+      transition: transform 0.25s ease-out, opacity 0.2s ease-out;
+      opacity: 0;
+      pointer-events: none;
     }
 
     .sidebar.open {
-      transform: translateX(0);
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
     }
   }
 </style>

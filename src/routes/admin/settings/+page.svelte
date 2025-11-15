@@ -417,7 +417,7 @@
       <!-- General Settings -->
       <div class="settings-card">
         <h3>Pengaturan Umum</h3>
-        <div class="settings-form">
+        <div class="settings-form general-settings">
           <div class="form-group">
             <label>Nama Platform</label>
             <input
@@ -468,7 +468,7 @@
       <!-- Commission Settings -->
       <div class="settings-card">
         <h3>Pengaturan Komisi & Fee</h3>
-        <div class="settings-form">
+        <div class="settings-form commission-settings">
           <div class="form-group">
             <label>Komisi Jastiper (%)</label>
             <input
@@ -491,7 +491,7 @@
             />
             <small>Persentase biaya platform dari setiap transaksi</small>
           </div>
-          <div class="form-group">
+          <div class="form-group amount-group">
             <label>Minimum Order Amount</label>
             <input
               type="number"
@@ -500,7 +500,7 @@
             />
             <small>Nilai minimal pemesanan dalam Rupiah</small>
           </div>
-          <div class="form-group">
+          <div class="form-group amount-group">
             <label>Maximum Order Amount</label>
             <input
               type="number"
@@ -574,7 +574,7 @@
       <!-- Verification Settings -->
       <div class="settings-card">
         <h3>Pengaturan Verifikasi</h3>
-        <div class="settings-form">
+        <div class="settings-form verification-settings">
           <div class="form-group checkbox-group">
             <label class="checkbox-label">
               <input
@@ -938,9 +938,26 @@
     gap: 1.5rem;
   }
 
+  .settings-form.general-settings {
+    column-gap: 2.25rem;
+    row-gap: 1.5rem;
+  }
+
+  .settings-form.commission-settings,
+  .settings-form.verification-settings {
+    align-items: flex-start;
+    column-gap: 2.25rem;
+    row-gap: 1.5rem;
+  }
+
+  .settings-form.commission-settings .amount-group {
+    margin-top: 0.25rem;
+  }
+
   .form-group {
     display: flex;
     flex-direction: column;
+    margin: 5px;
   }
 
   .form-group label {

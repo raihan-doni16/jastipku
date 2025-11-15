@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import { authStore } from '$lib/stores/auth';
   import Navbar from '$lib/components/Navbar.svelte';
+  import Modal from '$lib/components/Modal.svelte';
 
   let currentRole = 'guest';
   authStore.subscribe((val) => {
@@ -20,11 +21,13 @@
     email: 'rina@example.com',
     phone: '+62811111111',
     address: 'Jl. Contoh No. 123, Jakarta Selatan, DKI Jakarta 12345',
-    avatar: '👩'
+    avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg'
   };
 
   let isEditing = false;
   let editForm = { ...profile };
+
+  let profileModalOpen = false;
 
   function handleEdit() {
     isEditing = true;
@@ -38,7 +41,7 @@
   function handleSave() {
     profile = { ...editForm };
     isEditing = false;
-    alert('Profil berhasil diperbarui!');
+    profileModalOpen = true;
   }
 </script>
 
@@ -50,7 +53,9 @@
   <div class="profile-grid">
     <div class="profile-card">
       <div class="avatar-section">
-        <div class="avatar-large">{profile.avatar}</div>
+        <div class="avatar-large">
+          <img src={profile.avatar} alt={profile.name} />
+        </div>
         <h2>{profile.name}</h2>
         <p class="email">{profile.email}</p>
       </div>
@@ -134,30 +139,42 @@
 
   <div class="action-cards">
     <a href="/orders" class="action-card">
-      <span class="action-icon">📦</span>
+      <span class="action-icon">O</span>
       <h4>Pesanan Saya</h4>
       <p>Lihat semua pesanan dan tracking</p>
     </a>
 
     <a href="/browse" class="action-card">
-      <span class="action-icon">🛍️</span>
+      <span class="action-icon">B</span>
       <h4>Browse Jastip</h4>
       <p>Cari produk dari luar negeri</p>
     </a>
 
-    <div class="action-card" on:click={() => alert('Fitur coming soon!')}>
-      <span class="action-icon">⭐</span>
+    <div class="action-cards">
+      <a href="/reviews" class="action-card">
+      <span class="action-icon">U</span>
       <h4>Ulasan Saya</h4>
       <p>Lihat ulasan yang pernah diberikan</p>
+      </a>
     </div>
 
-    <div class="action-card" on:click={() => alert('Fitur coming soon!')}>
-      <span class="action-icon">💬</span>
+    <div class="action-cards" >
+      <a href="/chats" class="action-card">
+      <span class="action-icon">C</span>
       <h4>Chat History</h4>
       <p>Percakapan dengan jastiper</p>
+      </a>
     </div>
   </div>
 </div>
+
+<Modal
+  bind:isOpen={profileModalOpen}
+  type="success"
+  title="Profil diperbarui"
+  message="Profil Anda berhasil diperbarui."
+  confirmText="OK"
+/>
 
 <style>
   .container {
@@ -199,8 +216,18 @@
   }
 
   .avatar-large {
-    font-size: 5rem;
-    margin-bottom: 1rem;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 1rem auto;
+  }
+
+  .avatar-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .avatar-section h2 {
@@ -256,14 +283,33 @@
     color: #0f172a;
   }
 
-  .btn-edit {
-    padding: 0.6rem 1.25rem;
-    background: #eff6ff;
-    border: none;
-    border-radius: 6px;
-    color: #086adf;
+  .btn-edit,
+  .btn-cancel,
+  .btn-save {
+    padding: 0.7rem 1.4rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
     font-weight: 600;
+    font-size: 0.9rem;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+    transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease,
+      transform 0.15s ease, border-color 0.2s ease;
+  }
+
+  .btn-edit {
+    background: #ffffff;
+    color: #0f172a;
+    border-color: #e2e8f0;
+  }
+
+  .btn-edit:hover {
+    background: #f9fafb;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    transform: translateY(-1px);
   }
 
   .info-grid {
@@ -334,23 +380,27 @@
     justify-content: flex-end;
   }
 
-  .btn-cancel,
-  .btn-save {
-    padding: 0.875rem 1.5rem;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
+  .btn-cancel {
+    background: #f9fafb;
+    color: #475569;
+    border-color: #e2e8f0;
   }
 
-  .btn-cancel {
+  .btn-cancel:hover {
     background: #f1f5f9;
-    color: #64748b;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    transform: translateY(-1px);
   }
 
   .btn-save {
     background: linear-gradient(135deg, #086adf, #0ea5e9);
     color: white;
+    border: none;
+  }
+
+  .btn-save:hover {
+    box-shadow: 0 8px 18px rgba(8, 106, 223, 0.35);
+    transform: translateY(-1px);
   }
 
   .action-cards {
@@ -377,9 +427,17 @@
   }
 
   .action-icon {
-    font-size: 3rem;
-    display: block;
-    margin-bottom: 1rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem auto;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #f9fafb;
+    font-weight: 700;
+    font-size: 1.15rem;
   }
 
   .action-card h4 {

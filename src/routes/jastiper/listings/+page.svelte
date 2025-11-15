@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import { authStore } from '$lib/stores/auth';
   import Navbar from '$lib/components/Navbar.svelte';
+  import Modal from '$lib/components/Modal.svelte';
   import { listings } from '$lib/data/mockData';
 
   let currentRole = 'guest';
@@ -42,8 +43,28 @@
     });
   }
 
+  let modalOpen = false;
+  let modalTitle = '';
+  let modalMessage = '';
+  let modalType = 'info';
+  let modalShowCancel = false;
+  let modalContext = null;
+
+  function openModal({ title, message, type = 'info', showCancel = false, context = null }) {
+    modalTitle = title;
+    modalMessage = message;
+    modalType = type;
+    modalShowCancel = showCancel;
+    modalContext = context;
+    modalOpen = true;
+  }
+
   function handleToggleStatus(listingId) {
-    alert(`Toggle status untuk listing ${listingId}`);
+    openModal({
+      title: 'Ubah status postingan',
+      message: `Toggle status untuk listing ${listingId}. (Demo, belum terhubung API)`,
+      type: 'info'
+    });
   }
 
   function handleEdit(listingId) {
@@ -51,9 +72,33 @@
   }
 
   function handleDelete(listingId) {
-    if (confirm('Yakin ingin menghapus postingan ini?')) {
-      alert(`Postingan ${listingId} dihapus`);
+    openModal({
+      title: 'Hapus postingan?',
+      message: 'Yakin ingin menghapus postingan ini?',
+      type: 'confirm',
+      showCancel: true,
+      context: { action: 'delete', listingId }
+    });
+  }
+
+  function handleModalConfirm() {
+    if (modalContext?.action === 'delete') {
+      // Demo: hanya tampilkan pesan, belum hapus data asli/mock
+      openModal({
+        title: 'Postingan dihapus',
+        message: `Postingan ${modalContext.listingId} dihapus. (Demo, belum terhubung API)`,
+        type: 'success'
+      });
+      modalContext = null;
+      return;
     }
+    modalOpen = false;
+    modalContext = null;
+  }
+
+  function handleModalCancel() {
+    modalOpen = false;
+    modalContext = null;
   }
 </script>
 
@@ -130,7 +175,13 @@
           </div>
 
           <div class="card-image">
-            <div class="image-placeholder">{listing.images[0]}</div>
+            {#if listing.images?.length && listing.images[0]?.startsWith('http')}
+              <img src={listing.images[0]} alt={listing.title} loading="lazy" />
+            {:else}
+              <div class="image-placeholder">
+                {listing.images?.[0] ?? '📦'}
+              </div>
+            {/if}
           </div>
 
           <div class="card-content">
@@ -195,6 +246,18 @@
     </div>
   {/if}
 </div>
+
+<Modal
+  bind:isOpen={modalOpen}
+  type={modalType}
+  title={modalTitle}
+  message={modalMessage}
+  showCancel={modalShowCancel}
+  cancelText="Batal"
+  confirmText="OK"
+  on:confirm={handleModalConfirm}
+  on:cancel={handleModalCancel}
+/>
 
 <style>
   .container {
@@ -357,7 +420,15 @@
     position: relative;
     width: 100%;
     height: 200px;
-    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    background: #e5e7eb;
+    overflow: hidden;
+  }
+
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .image-placeholder {

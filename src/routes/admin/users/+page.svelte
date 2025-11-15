@@ -94,7 +94,9 @@
           <tr>
             <td>
               <div class="user-cell">
-                <span class="avatar">{user.avatar}</span>
+                <span class="avatar">
+                  <img src={user.avatar} alt={user.name} loading="lazy" />
+                </span>
                 <div class="user-info">
                   <span class="user-name">{user.name}</span>
                   <span class="user-id">{user.id}</span>
@@ -179,6 +181,7 @@
 
   .search-input {
     width: 100%;
+    max-width: 1300px;
     padding: 0.875rem 1.25rem;
     border: 2px solid #e2e8f0;
     border-radius: 8px;
@@ -186,6 +189,7 @@
     margin-bottom: 1rem;
     transition: border-color 0.2s;
   }
+
 
   .search-input:focus {
     outline: none;
@@ -260,7 +264,19 @@
   }
 
   .avatar {
-    font-size: 2.5rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #e5e7eb;
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 
   .user-info {
