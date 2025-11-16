@@ -7,6 +7,8 @@
   import { popularCountries } from '$lib/data/mockData';
   import { authStore } from '$lib/stores/auth';
 
+  const OTHER_STORE_LABEL = 'Toko lainnya (isi manual)';
+
   const steps = [
     { title: 'Negara', caption: 'Pilih destinasi belanja' },
     { title: 'Toko', caption: 'Tentukan toko tujuan' },
@@ -21,6 +23,7 @@
   let form = {
     country: '',
     store: '',
+    customStoreName: '',
     storeUrl: '',
     productName: '',
     productUrl: '',
@@ -36,6 +39,9 @@
     convertedMaxTotal: 0,
     currency: 'JPY'
   };
+
+  let storeDisplay = '';
+  let isCustomStore = false;
 
   let errors = {};
 
@@ -69,6 +75,14 @@
     }
   });
 
+  $: {
+    if (!isCustomStore) {
+      form.store = storeDisplay;
+    } else {
+      form.store = form.customStoreName || '';
+    }
+  }
+
   function nextStep() {
     const isValid = validateStep(currentStep);
     if (!isValid) return;
@@ -90,7 +104,9 @@
         if (!form.country) errors.country = 'Negara wajib dipilih.';
         break;
       case 1:
-        if (!form.store) errors.store = 'Toko wajib dipilih.';
+        if (!form.store) {
+          errors.store = isCustomStore ? 'Nama toko custom wajib diisi.' : 'Toko wajib dipilih.';
+        }
         break;
       case 2:
         if (!form.productName) errors.productName = 'Nama produk wajib diisi.';
@@ -174,15 +190,31 @@
           <input
             id="store"
             list="store-options"
-            placeholder="Ketik nama toko"
-            bind:value={form.store}
-            on:input={() => (errors.store = '')}
+            placeholder="Ketik nama toko atau pilih 'Toko lainnya'"
+            bind:value={storeDisplay}
+            on:input={(event) => {
+              const value = event.currentTarget.value;
+              errors.store = '';
+              isCustomStore = value === OTHER_STORE_LABEL;
+            }}
           />
           <datalist id="store-options">
             {#each (storeSuggestions[form.country] ?? []) as item}
               <option value={item} />
             {/each}
+            <option value={OTHER_STORE_LABEL} />
           </datalist>
+          {#if isCustomStore}
+            <div class="custom-store">
+              <label for="custom-store">Nama Toko (Custom)</label>
+              <input
+                id="custom-store"
+                placeholder="Masukkan nama toko"
+                bind:value={form.customStoreName}
+                on:input={() => (errors.store = '')}
+              />
+            </div>
+          {/if}
           {#if errors.store}
             <p class="error">{errors.store}</p>
           {/if}
@@ -200,7 +232,9 @@
     {:else if currentStep === 2}
       <div class="grid two">
         <div class="card">
-          <label for="product-name">Nama Produk</label>
+          <label for="product-name">
+            Nama Produk{#if isCustomStore} (Custom){/if}
+          </label>
           <input
             id="product-name"
             placeholder="Contoh: Nintendo Switch OLED"

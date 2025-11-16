@@ -43,6 +43,23 @@
     'Sepatu'
   ];
 
+  const storeProductSuggestions = {
+    'Olive Young': [
+      'Laneige Water Sleeping Mask',
+      'COSRX Acne Pimple Patch',
+      'Innisfree Green Tea Seed Serum'
+    ],
+    Innisfree: ['Innisfree Jeju Orchid Cream', 'Innisfree No-Sebum Mineral Powder'],
+    'Etude House': ['Etude House Tint My Brows', 'Etude House Fixing Tint'],
+    Aland: ['OOTD Oversize Hoodie', 'Basic T-Shirt Pack'],
+    'Yodobashi Camera': ['Sony WH-1000XM5', 'Canon EOS R10 Body'],
+    'Bic Camera': ['Nintendo Switch OLED', 'Apple AirPods Pro 2'],
+    'Don Quijote': ['KitKat Matcha Japan Edition', 'Souvenir Anime Random Pack'],
+    'ION Orchard': ['Sephora Exclusive Set', 'Charles & Keith Handbag'],
+    'Marina Bay Sands': ['Luxury Fragrance Set', 'Designer Wallet'],
+    'Mustafa Centre': ['Assorted Snacks Pack', 'Electronics Travel Adapter']
+  };
+
   $: filteredListings = listings.filter((listing) => {
     const matchSearch =
       searchQuery === '' ||
@@ -109,10 +126,13 @@
     productName: '',
     productLink: '',
     store: '',
+    customStoreName: '',
     quantity: 1,
     estimatedPrice: '',
     notes: ''
   };
+  let isCustomStore = false;
+  let productOptions = [];
 
   let customOrderFeedbackOpen = false;
   let customOrderFeedbackTitle = '';
@@ -143,14 +163,20 @@
     event.preventDefault();
     event.stopPropagation();
     selectedListingForCustom = listing;
+    const initialStore = listing.stores?.[0] || '';
+    const initialProducts = storeProductSuggestions[initialStore] ?? [];
+    const initialProduct = initialProducts[0] || '';
     customOrderForm = {
-      productName: '',
+      productName: initialProduct,
       productLink: '',
-      store: listing.stores?.[0] || '',
+      store: initialStore,
+      customStoreName: '',
       quantity: 1,
       estimatedPrice: '',
       notes: ''
     };
+    isCustomStore = false;
+    productOptions = initialProducts;
     showCustomOrderModal = true;
   }
 
@@ -159,11 +185,33 @@
     selectedListingForCustom = null;
   }
 
+  $: {
+    if (!isCustomStore) {
+      productOptions = storeProductSuggestions[customOrderForm.store] ?? [];
+    } else {
+      productOptions = [];
+    }
+  }
+
   function submitCustomOrder() {
     if (!customOrderForm.productName || !customOrderForm.estimatedPrice) {
       showCustomOrderFeedback({
         title: 'Data belum lengkap',
         message: 'Mohon lengkapi nama produk dan estimasi harga.',
+        type: 'warning'
+      });
+      return;
+    }
+
+    const storeName =
+      customOrderForm.store === 'Lainnya'
+        ? (customOrderForm.customStoreName || '').trim()
+        : customOrderForm.store;
+
+    if (!storeName) {
+      showCustomOrderFeedback({
+        title: 'Nama toko belum diisi',
+        message: 'Silakan isi nama toko untuk custom order.',
         type: 'warning'
       });
       return;
@@ -181,7 +229,7 @@
       description: customOrderForm.notes || 'Pesanan custom',
       country: selectedListingForCustom.country,
       countryCode: selectedListingForCustom.countryCode,
-      stores: [customOrderForm.store],
+      stores: [storeName],
       categories: selectedListingForCustom.categories,
       fee: selectedListingForCustom.fee,
       minOrder: parseInt(customOrderForm.estimatedPrice),
@@ -190,7 +238,8 @@
       customDetails: {
         productName: customOrderForm.productName,
         productLink: customOrderForm.productLink,
-        store: customOrderForm.store,
+        store: storeName,
+        isCustomStore: customOrderForm.store === 'Lainnya',
         notes: customOrderForm.notes
       }
     };
@@ -436,16 +485,75 @@
 
       <div class="custom-order-form">
         <div class="form-group">
-          <label for="productName"
-            >Nama Produk <span class="required">*</span></label
+          <label for="store">Nama Toko</label>
+          <select
+            id="store"
+            bind:value={customOrderForm.store}
+            on:change={() => {
+              isCustomStore = customOrderForm.store === 'Lainnya';
+              if (!isCustomStore) {
+                const options =
+                  storeProductSuggestions[customOrderForm.store] ?? [];
+                customOrderForm.productName = options[0] || '';
+              } else {
+                customOrderForm.productName = '';
+              }
+            }}
           >
-          <input
-            id="productName"
-            type="text"
-            bind:value={customOrderForm.productName}
-            placeholder="Contoh: iPhone 15 Pro Max 256GB"
-          />
+            {#if selectedListingForCustom.stores?.length > 0}
+              {#each selectedListingForCustom.stores as store}
+                <option value={store}>{store}</option>
+              {/each}
+            {/if}
+            <option value="Lainnya">Lainnya</option>
+          </select>
         </div>
+
+        {#if isCustomStore}
+          <div class="form-group">
+            <label for="customStore"
+              >Nama Toko (Custom) <span class="required">*</span></label
+            >
+            <input
+              id="customStore"
+              type="text"
+              bind:value={customOrderForm.customStoreName}
+              placeholder="Masukkan nama toko"
+            />
+          </div>
+        {/if}
+
+        {#if isCustomStore}
+          <div class="form-group">
+            <label for="productName">
+              Nama Produk (Custom) <span class="required">*</span>
+            </label>
+            <input
+              id="productName"
+              type="text"
+              bind:value={customOrderForm.productName}
+              placeholder="Contoh: iPhone 15 Pro Max 256GB"
+            />
+          </div>
+        {:else}
+          <div class="form-group">
+            <label for="productNameSelect">
+              Nama Produk <span class="required">*</span>
+            </label>
+            <select
+              id="productNameSelect"
+              bind:value={customOrderForm.productName}
+            >
+              {#if productOptions.length > 0}
+                {#each productOptions as product}
+                  <option value={product}>{product}</option>
+                {/each}
+              {:else}
+                <option value="" disabled>Pilih toko terlebih dahulu</option>
+              {/if}
+            </select>
+          </div>
+        {/if}
 
         <div class="form-group">
           <label for="productLink">Link Produk (Opsional)</label>
@@ -455,18 +563,6 @@
             bind:value={customOrderForm.productLink}
             placeholder="https://..."
           />
-        </div>
-
-        <div class="form-group">
-          <label for="store">Nama Toko</label>
-          <select id="store" bind:value={customOrderForm.store}>
-            {#if selectedListingForCustom.stores?.length > 0}
-              {#each selectedListingForCustom.stores as store}
-                <option value={store}>{store}</option>
-              {/each}
-            {/if}
-            <option value="Lainnya">Lainnya</option>
-          </select>
         </div>
 
         <div class="form-row">
