@@ -14,6 +14,7 @@
   const tabs = ['Ringkasan', 'Chat', 'Negosiasi', 'Final Produk', 'Pengiriman', 'Riwayat'];
   let activeTab = 'Ringkasan';
   let showModal = false;
+  let showPelunasanModal = false;
 
   $: order = data.order;
   $: costBreakdown = data.costBreakdown;
@@ -105,6 +106,16 @@
             <span>Total Estimasi</span>
             <strong>Rp {costBreakdown.total.toLocaleString('id-ID')}</strong>
           </div>
+          {#if order.status === 'Menunggu_Bayar_Pajak'}
+            <div class="pelunasan-actions">
+              <button class="primary" on:click={() => (showPelunasanModal = true)}>
+                Bayar Pelunasan
+              </button>
+              <p class="pelunasan-note">
+                Tagihan pajak dan pelunasan akan dikonfirmasi oleh admin. (Demo)
+              </p>
+            </div>
+          {/if}
         </article>
       </div>
     {/if}
@@ -295,6 +306,21 @@
   </div>
 </Modal>
 
+<Modal
+  bind:isOpen={showPelunasanModal}
+  title="Bayar Pelunasan"
+  showCancel={true}
+  confirmText="Saya Sudah Bayar"
+  cancelText="Tutup"
+>
+  <div class="order-modal">
+    <p>
+      Ini adalah simulasi pelunasan. Silakan lakukan pembayaran pajak dan pelunasan sesuai
+      instruksi admin, lalu upload bukti pembayaran di sistem.
+    </p>
+  </div>
+</Modal>
+
 <style>
   .back-link {
     display: inline-flex;
@@ -409,6 +435,17 @@
     display: flex;
     justify-content: space-between;
     font-size: 1.125rem;
+  }
+
+  .pelunasan-actions {
+    margin-top: 1.25rem;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .pelunasan-note {
+    font-size: 0.85rem;
+    color: #92400e;
   }
 
   .chat {

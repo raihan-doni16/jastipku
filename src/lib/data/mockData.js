@@ -74,6 +74,22 @@ export const orders = [
     status: 'Dalam_Penerbangan',
     estimate: 920000,
     createdAt: '2024-02-20'
+  },
+  {
+    code: 'JP-240501-010',
+    country: 'Jepang',
+    store: 'Don Quijote Shibuya',
+    product: 'Snack & Souvenir Paket Campur',
+    variations: 'Berat ± 2kg',
+    status: 'Menunggu_Bayar_Pajak',
+    estimate: 1250000,
+    createdAt: '2024-05-01',
+    timeline: [
+      { status: 'Dibelikan', timestamp: '2024-05-02 11:15 JST' },
+      { status: 'Dalam Penerbangan', timestamp: '2024-05-03 08:30 JST' },
+      { status: 'Tiba di Indonesia', timestamp: '2024-05-03 14:10 WIB' },
+      { status: 'Menunggu Bayar Pajak', timestamp: '2024-05-03 16:45 WIB' }
+    ]
   }
 ];
 
@@ -87,6 +103,7 @@ export const statusMeta = {
   Diproses_Penjemputan: { label: 'Diproses Penjemputan', color: '#0ea5e9' },
   Dalam_Penerbangan: { label: 'Dalam Penerbangan', color: '#1d4ed8' },
   'Customs/Transit': { label: 'Customs/Transit', color: '#f97316' },
+  Menunggu_Bayar_Pajak: { label: 'Menunggu Bayar Pajak', color: '#f59e0b' },
   Dikirim_Kurir: { label: 'Dikirim Kurir', color: '#38bdf8' },
   Selesai: { label: 'Selesai', color: '#15803d' },
   Dibatalkan: { label: 'Dibatalkan', color: '#ef4444' }
