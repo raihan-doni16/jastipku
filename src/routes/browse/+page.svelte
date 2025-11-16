@@ -185,6 +185,12 @@
     selectedListingForCustom = null;
   }
 
+  function goToConsultation(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    goto('/chats');
+  }
+
   $: {
     if (!isCustomStore) {
       productOptions = storeProductSuggestions[customOrderForm.store] ?? [];
@@ -396,6 +402,10 @@
                   <span class="btn-label">Custom Order</span>
                 </button>
               {/if}
+              <button class="btn-consult" on:click={(e) => goToConsultation(e)}>
+                <span class="btn-icon-circle">💬</span>
+                <span class="btn-label">Konsultasi</span>
+              </button>
             {:else}
               <button
                 class="btn-add-to-cart"
@@ -963,6 +973,30 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+
+   .btn-consult {
+    flex: 1;
+    padding: 0.55rem 1rem;
+    background: #f1f5f9;
+    color: #0f172a;
+    border-radius: 999px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease,
+      border-color 0.2s ease, color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-consult:hover {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    transform: translateY(-1px);
   }
 
   .btn-custom-order:hover {

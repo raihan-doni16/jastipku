@@ -443,10 +443,18 @@
         <hr />
         <div class="summary-row highlight">
           <span>Yang Harus Dibayar</span>
-          <span class="value">{formatPrice(calculatePaymentAmount())}</span>
+          <span class="value">
+            {#if paymentData.paymentType === 'dp'}
+              {formatPrice(calculateTotal() * 0.5)}
+            {:else}
+              {formatPrice(calculateTotal())}
+            {/if}
+          </span>
         </div>
         {#if paymentData.paymentType === 'dp'}
-          <div class="summary-note">Sisa {formatPrice(calculateTotal() * 0.5)} dibayar kemudian</div>
+          <div class="summary-note">
+            Sisa {formatPrice(calculateTotal() * 0.5)} dibayar kemudian
+          </div>
         {/if}
       {/if}
     </div>
